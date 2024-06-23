@@ -3,6 +3,8 @@ import pygame
 import numpy
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
+"""Inputs are: launch angle from horizontal, strength of gravity g, launch speed u and launch height h.
+Use a fixed increment of time t, the graph must automatically update when inputs are changed."""
 
 u = 20 #ms^-1
 g = 9.81 #ms^-2
