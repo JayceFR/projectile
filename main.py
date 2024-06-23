@@ -13,8 +13,10 @@ t = np.arange(-2.0, 2.0, 0.001)
 ydata = t ** 2
 initial_text = "t ** 2"
 l, = plt.plot(t, ydata, lw=2)
-
-
+"""
+class Data:
+    def __init__(self, height, speed, angle, gravity):
+"""
 def submit(text):
     ydata = eval(text)
     l.set_ydata(ydata)
