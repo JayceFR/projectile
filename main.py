@@ -24,7 +24,7 @@ def submit(text):
 axbox = plt.axes([0.1, 0.05, 0.8, 0.075])
 text_box = TextBox(axbox, 'Evaluate', initial=initial_text)
 text_box.on_submit(submit)
-
+plt.show()
 
 u = 20 #ms^-1
 g = 9.81 #ms^-2
