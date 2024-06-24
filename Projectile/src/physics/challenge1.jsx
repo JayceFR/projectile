@@ -36,10 +36,10 @@ function Challenge1(props){
   return (
     <>
       <div className="controls">
-        <Input name={"launch angle /deg"} value={angle} change_method={setAngle}/>
-        <Input name={"launch speed /ms^-1"} value={vel} change_method={setVel}/>
-        <Input name={"launch height /m"} value={height} change_method={setHeight}/>
-        <Input name={"g /ms^-2"} value={g} change_method={setg}/>
+        <Input name={"launch angle"} unit={"deg"} value={angle} change_method={setAngle} type={'float'}/>
+        <Input name={"launch speed"} unit={"ms^-1"} value={vel} change_method={setVel} type={'float'}/>
+        <Input name={"launch height"} unit={"m"} value={height} change_method={setHeight} type={'float'}/>
+        <Input name={"g"} value={g} unit={"ms^-2"} change_method={setg} type = {'float'}/>
       </div>
       <div className="canvas">
         <div className="graph">
