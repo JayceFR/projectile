@@ -105,6 +105,13 @@
   border-color: #990011;
 }
 
+.canvas .output{
+  position: relative;
+  top: 60%;
+  right: 0;
+  color: black;
+}
+
 @media screen and (max-width: 600px) {
 
   .navbar li.right,

@@ -32,7 +32,7 @@ function Challenge2(props){
     //Add the final x intercept
     ppoints.x.push(prange);
     ppoints.y.push(0);
-
+    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
     setPoints(convert_to_points(ppoints));
     setXa(curr_xa);
     setYa(curr_ya);
@@ -71,10 +71,15 @@ function Challenge2(props){
                 label: "No Air Resistance",
                 data: points,
                 borderColor: "rgb(75,192,192)",
-                pointBackgroundColor: "rgb(75,192,192)",
+                pointBackgroundColor: "rgb(75,192,192)",  
               },
             ]}
             />
+          <div className="output">
+            <p>Range  : {range.toPrecision(4)}m</p>
+            <p>Apogee : ({xa.toPrecision(3)}, {ya.toPrecision(3)})</p>
+            <p>Time of Flight: {time_of_flight.toPrecision(3)}s</p>
+          </div>
         </div>
       </div>
     </>
