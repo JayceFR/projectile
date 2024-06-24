@@ -96,13 +96,13 @@
 }
 
 .navbar li a:hover:not(.active) {
-  color: #A9D6E5;
+  color: #990011;
   font-size: 16px;
 }
 
 .navbar li a.active {
   border-bottom-style: solid;
-  border-color: #A9D6E5;
+  border-color: #990011;
 }
 
 @media screen and (max-width: 600px) {
