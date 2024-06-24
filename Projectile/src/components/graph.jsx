@@ -5,9 +5,9 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 function Graph(props){
   const options = {
-    tension:0.4,
     scales: {
       x: {
+        type: 'linear',
         beginAtZero: true,
         title: {
           display: true,
@@ -18,6 +18,7 @@ function Graph(props){
         }
       },
       y:{
+        type: 'linear',
         beginAtZero: true,
         min: 0,
         title: {
@@ -30,16 +31,8 @@ function Graph(props){
       }
     }
   }
-  console.log(props.points);
   const lineChartData = {
-    labels: props.points.x,
-    datasets: [
-      {
-        label: props.label,
-        data: props.points.y,
-        borderColor: "rgb(75,192,192)",
-      },
-    ],
+    datasets: props.dataset,
   };
   return (
     <>

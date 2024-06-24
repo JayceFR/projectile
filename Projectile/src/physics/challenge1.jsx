@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { ux, uy } from "./utils";
+import { convert_to_points, ux, uy } from "./utils";
 import Graph from "../components/graph";
 import Input from "../components/input";
 
@@ -10,22 +10,21 @@ function Challenge1(props){
   const [g, setg] = useState(9.8);
   const [time_step, set_time_step] = useState(0.02);
 
-  const [points, setPoints] = useState({x: [], y: []});
+  const [points, setPoints] = useState({});
 
   const generate_points = () => {
     let time = 0;
     let y = height + uy(vel, angle) - 0.5 * g * time * time;
     let x = 0;
-    setPoints({x: [], y: []});
     let ppoints = {x:[], y:[]};
     while (y > -10){
       y = height + uy(vel, angle) * time - 0.5 * g * time * time;
-      x = Math.floor(ux(vel, angle) * time);
+      x = ux(vel, angle) * time;
       ppoints.x.push(x);
       ppoints.y.push(y);
       time += time_step;
     }
-    setPoints(ppoints);
+    setPoints(convert_to_points(ppoints))
   }
 
   useEffect(() => {
@@ -43,7 +42,19 @@ function Challenge1(props){
       </div>
       <div className="canvas">
         <div className="graph">
-          <Graph points = {points} xtext = {"x/m"} ytext = {"y/m"} label={"No Air Resistance"}/>
+          <Graph 
+            points = {points} 
+            xtext = {"x/m"} 
+            ytext = {"y/m"} 
+            dataset = {[
+              {
+                label: "No Air Resistance",
+                data: points,
+                borderColor: "rgb(75,192,192)",
+                cubicInterpolationMode: 'monotone',
+              },
+            ]}
+            />
         </div>
       </div>
 
