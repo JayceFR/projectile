@@ -1,0 +1,65 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: white;
+  overflow-y: hidden;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.controls{
+  position: absolute;
+  width: 25%;
+  left:0;
+  height:100%;
+  background-color: #FCF6F5;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.controls p{
+  position: relative;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.controls input{
+  position: relative;
+  width: 90%;
+  margin-left: 2.5%;
+  margin-top: 2px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  border: 2px solid rgb(255, 255, 255);
+  padding: 5px;
+  border-radius: 40px;
+  font-size: 16px;
+  color: black;
+  padding-left: 10px;
+}
+
+
+
+.canvas{
+  overflow-y: auto;
+  position: absolute;
+  right:0;
+  background-color: transparent;
+  width: 74.6%;
+  height: 100%;
+}
+
+.canvas .graph{
+  background-color: white;
+  position: relative;
+  top: 20%;
+}
