@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { convert_to_points, gen_points } from "./utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
+import { minu, low_ball, high_ball } from "../model/projectile";
 
 function Challenge3(props){
   //inputs
@@ -23,18 +24,15 @@ function Challenge3(props){
 
   const generate_points = () => {
     //min u 
-    const minvel = Math.pow(g, 0.5) * Math.pow(target_y + Math.pow(target_x * target_x + target_y * target_y, 0.5), 0.5);
-    const points_angle = Math.atan2(target_y + Math.pow(target_x * target_x + target_y * target_y, 0.5), target_x);
-    setPoints(convert_to_points(gen_points(50, {x:target_x, y:target_y}, 0, points_angle, g, minvel)));
+    const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50);
+    setPoints(ppoints);
     setMinLaunchVel(minvel);
     //low ball
-    const a = g * target_x * target_x / (2 * vel * vel)
-    const b = target_x * -1
-    const c = target_y - 0 + (g * target_x * target_x)/(2 * vel * vel)
-    const high_theta = Math.atan2(-b + Math.pow(b * b - 4 * a * c, 0.5), 2 * a)
-    const low_theta = Math.atan2(-b - Math.pow(b * b - 4 * a * c, 0.5), 2 * a)
-    setHighBallPoints(convert_to_points(gen_points(50, {x:target_x, y:target_y}, 0, high_theta, g, vel)));
-    setLowBallPoints(convert_to_points(gen_points(50, {x:target_x, y:target_y}, 0, low_theta, g, vel)));
+    const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g);
+    //high ball
+    const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g);
+    setHighBallPoints(pphighpoints);
+    setLowBallPoints(pplowpoints);
     setLowAngle(low_theta);
     sethighangle(high_theta);
     setMinVelAngle(points_angle);

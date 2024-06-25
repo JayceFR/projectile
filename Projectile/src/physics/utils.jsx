@@ -27,5 +27,12 @@ function gen_points(num_of_points, final_point, height, rangle, g, vel ){
   return ppoints;
 }
 
-export {ux, uy, radians, convert_to_points, gen_points}
+function discriminant(target_x, target_y, vel, g){
+  const a = g * target_x * target_x / (2 * vel * vel)
+  const b = target_x * -1
+  const c = target_y - 0 + (g * target_x * target_x)/(2 * vel * vel)
+  return [a, b, c]
+}
+
+export {ux, uy, radians, convert_to_points, gen_points, discriminant}
 
