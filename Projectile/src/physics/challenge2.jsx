@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { convert_to_points, radians } from "./utils";
+import { convert_to_points, gen_points, radians } from "./utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 
@@ -23,15 +23,7 @@ function Challenge2(props){
     const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
     let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
     console.log("range", prange);
-    let ppoints = {x: [], y: []}
-    for(let x = 0; x < 50; x++){
-      var curr_x = 0 + x * prange/50;
-      ppoints.x.push(curr_x);
-      ppoints.y.push(height + curr_x * Math.tan(rangle) - g * (1 + Math.pow(Math.tan(rangle), 2)) * curr_x * curr_x * 1/(2*Math.pow(vel,2)));
-    }
-    //Add the final x intercept
-    ppoints.x.push(prange);
-    ppoints.y.push(0);
+    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
     setTimeOfFlight(prange/(vel * Math.cos(rangle)));
     setPoints(convert_to_points(ppoints));
     setXa(curr_xa);

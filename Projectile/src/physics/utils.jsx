@@ -15,5 +15,17 @@ function convert_to_points(points){
   return datapoints
 }
 
-export {ux, uy, radians, convert_to_points}
+function gen_points(num_of_points, final_point, height, rangle, g, vel ){
+  let ppoints = {x: [], y: []}
+  for(let x = 0; x < num_of_points; x++){
+    var curr_x = 0 + x * final_point.x/50;
+    ppoints.x.push(curr_x);
+    ppoints.y.push(height + curr_x * Math.tan(rangle) - g * (1 + Math.pow(Math.tan(rangle), 2)) * curr_x * curr_x * 1/(2*Math.pow(vel,2)));
+  }
+  ppoints.x.push(final_point.x);
+  ppoints.y.push(final_point.y);
+  return ppoints;
+}
+
+export {ux, uy, radians, convert_to_points, gen_points}
 
