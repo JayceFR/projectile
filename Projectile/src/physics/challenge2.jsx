@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { convert_to_points, gen_points, radians } from "./utils";
+import { convert_to_points, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 

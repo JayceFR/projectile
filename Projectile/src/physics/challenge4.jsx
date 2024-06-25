@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { convert_to_points, gen_points, radians } from "./utils";
+import { convert_to_points, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
+import { max_r } from "../model/projectile";
 
 function Challenge4(props){
   const [angle, setAngle2] = useState(36);
@@ -19,10 +20,9 @@ function Challenge4(props){
     const rangle = radians(angle)
     let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
     setPoints(convert_to_points(gen_points(50, {x:prange, y:0}, height, rangle, g, vel)))
-    const mprange = vel * vel * 1/g * Math.pow(1 + (2 * g* height)/(vel * vel), 0.5);
-    const mangle = Math.asin(1/Math.pow(2 + (2 * g * height)/(vel * vel), 0.5));
+    const [ , mangle, points] = max_r(g, height, vel);
     setThetaMax(mangle);
-    setMaxRange(convert_to_points(gen_points(50, {x:mprange, y:0}, height, mangle, g, vel)));
+    setMaxRange(points);
   }
 
   useEffect(() => {

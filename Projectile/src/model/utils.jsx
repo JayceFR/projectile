@@ -34,5 +34,10 @@ function discriminant(target_x, target_y, vel, g){
   return [a, b, c]
 }
 
-export {ux, uy, radians, convert_to_points, gen_points, discriminant}
+function range(vel, g, rangle, height){
+  let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+  return prange
+}
+
+export {ux, uy, radians, convert_to_points, gen_points, discriminant, range}
 

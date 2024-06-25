@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Input from "../components/input";
 import Graph from "../components/graph";
-import { minu, low_ball, high_ball } from "../model/projectile";
+import { minu, low_ball, high_ball, max_r, bounding_parabola } from "../model/projectile";
+import { convert_to_points } from "../model/utils";
 
-function Challenge3(props){
+function Challenge5(props){
   //inputs
   const [target_x, setTargetx] = useState(1000);
   const [target_y, setTargety] = useState(300);
@@ -20,21 +21,30 @@ function Challenge3(props){
   const [high_ball_points, setHighBallPoints] = useState([]);
   const [low_ball_points, setLowBallPoints] = useState([]);
   const [points, setPoints] = useState([]);
+  const [max_r_points, setMaxRPoints] = useState([]);
+  const [bounding_points, setBoundingPoints] = useState([]);
 
   const generate_points = () => {
     //min u 
-    const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50, {x:target_x, y:target_y});
+    const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50, {x:null, y:0});
     setPoints(ppoints);
     setMinLaunchVel(minvel);
+    setMinVelAngle(points_angle);
     //low ball
-    const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g, {x:target_x, y:target_y});
-    //high ball
-    const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g, {x: target_x, y: target_y});
-    setHighBallPoints(pphighpoints);
+    const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g, {x:null, y:0});
     setLowBallPoints(pplowpoints);
     setLowAngle(low_theta);
+    //high ball
+    const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g, {x:null, y:0});
+    setHighBallPoints(pphighpoints);
     sethighangle(high_theta);
-    setMinVelAngle(points_angle);
+    //range
+    const [mprange,,max_r_point] = max_r(g, 0, vel)
+    setMaxRPoints(max_r_point) 
+    //bounding parabola
+    const bpoints = convert_to_points(bounding_parabola(50, {x:mprange, y:0}, g, vel))
+    setBoundingPoints(bpoints);
+    console.log("bounding points", bpoints)
   }
 
   useEffect(() => {
@@ -77,6 +87,16 @@ function Challenge3(props){
                 label: "low ball",
                 data: low_ball_points,
                 borderColor: "rgb(20,120,20)"
+              },
+              {
+                label: "max range",
+                data: max_r_points, 
+                borderColor: "rgb(255,242,0)"
+              },
+              {
+                label: "bounding parabola",
+                data: bounding_points,
+                borderColor: "rgb(255, 127, 39)"
               }
             ]}
             />
@@ -94,4 +114,4 @@ function Challenge3(props){
   )
 }
 
-export default Challenge3
+export default Challenge5
