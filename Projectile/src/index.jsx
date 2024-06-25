@@ -7,7 +7,7 @@ import Nav from './components/nav.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename='/Projectile'>
     <Nav/>
     <App />
     </BrowserRouter>
