@@ -34,8 +34,9 @@ function high_ball(target_x, target_y, vel, g, finish){
 function max_r(g, height, vel){
   const mprange = vel * vel * 1/g * Math.pow(1 + (2 * g* height)/(vel * vel), 0.5);
   const mangle = Math.asin(1/Math.pow(2 + (2 * g * height)/(vel * vel), 0.5));
-  const points = convert_to_points(gen_points(50, {x:mprange, y:0}, height, mangle, g, vel))
-  return [mprange, mangle, points];
+  const ppoints = gen_points(50, {x:mprange, y:0}, height, mangle, g, vel)
+  const points = convert_to_points(ppoints)
+  return [mprange, mangle, points, ppoints];
 }
 
 function bounding_parabola(num_of_points, final_point,g, vel ){
@@ -50,5 +51,23 @@ function bounding_parabola(num_of_points, final_point,g, vel ){
   return ppoints;
 }
 
-export {minu, low_ball, high_ball, max_r, bounding_parabola}
+function distance_travelled_i(dx, dy){
+  let s = 0;
+  for (let x = 0; x < dx.length; x++){
+    s += Math.sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
+  }
+  return s
+}
+
+function distance_travelled(vel, g, rangle, prange){
+  const z_func = (z) => {
+    return 0.5 * Math.log(Math.abs(Math.sqrt(1 + z*z) + z)) + 0.5 * z * Math.sqrt(1+z*z);
+  }
+  a = (vel * vel) / (g * (1 + Math.pow(Math.tan(rangle), 2)));
+  b = Math.tan(rangle);
+  c = Math.tan(rangle) - g * prange * (1 + Math.pow(Math.tan(rangle), 2) / (vel * vel))
+  return a * (z_func(b) - z_func(c));
+}
+
+export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled}
 

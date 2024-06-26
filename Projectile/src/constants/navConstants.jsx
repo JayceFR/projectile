@@ -3,6 +3,7 @@ import Challenge2 from "../physics/challenge2";
 import Challenge3 from "../physics/challenge3";
 import Challenge4 from "../physics/challenge4";
 import Challenge5 from "../physics/challenge5";
+import Challenge6 from "../physics/challenge6";
 
 export const nav = [
   {path: "/", name:"Challenge1", element:<Challenge1/>},
@@ -10,4 +11,5 @@ export const nav = [
   {path: "/3", name:"Challenge3", element:<Challenge3/>},
   {path: "/4", name:"Challenge4", element:<Challenge4/>},
   {path: "/5", name:"Challenge5", element:<Challenge5/>},
+  {path: "/6", name:"Challenge6", element:<Challenge6/>},
 ]

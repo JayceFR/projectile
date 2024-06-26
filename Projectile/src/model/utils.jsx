@@ -39,5 +39,15 @@ function range(vel, g, rangle, height){
   return prange
 }
 
-export {ux, uy, radians, convert_to_points, gen_points, discriminant, range}
+function delta(x){
+  var pos = 0
+  var rdx = []
+  while (pos < x.length - 1){
+    rdx.push(x[pos+1] - x[pos])
+    pos += 1
+  }
+  return rdx
+}
+
+export {ux, uy, radians, convert_to_points, gen_points, discriminant, range, delta}
 
