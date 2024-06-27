@@ -6,6 +6,7 @@ import fragmentShader from './shaders/fragment.glsl'
 
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -20,7 +21,7 @@ function Earth(props){
       0.1,
       1000
     );
-    camera.position.z = 10;
+    camera.position.z = 15;
     const canvas = document.getElementById('mycanvas');
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -30,14 +31,9 @@ function Earth(props){
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
     
-    // const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-    // ambientLight.castShadow = true;
-    // scene.add(ambientLight);
-
-    // const spotLight = new THREE.SpotLight(0xffffff, 1);
-    // spotLight.castShadow = true
-    // spotLight.position.set(0, 64, 32)
-    // scene.add(spotLight)
+    const group = new THREE.Group();
+    group.rotation.z = -23.4 * Math.PI / 180;
+    scene.add(group);
 
     const sphere = new THREE.Mesh(
       new THREE.SphereGeometry(5,50,50),
@@ -53,7 +49,7 @@ function Earth(props){
       })
     );
 
-    scene.add(sphere)
+    group.add(sphere)
 
     const atmosphere = new THREE.Mesh(
       new THREE.SphereGeometry(5,50,50),
@@ -67,10 +63,15 @@ function Earth(props){
     atmosphere.scale.set(1.1, 1.1, 1.1);
     scene.add(atmosphere);
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    window.addEventListener('resize', () => this.onWindowResize(), false);
+
     const animate = () => {
+      controls.update();
       renderer.render(scene, camera);
       window.requestAnimationFrame(animate);
-      sphere.rotation.y += 0.001
+      sphere.rotation.y += 0.0005
     }
     animate()
 
