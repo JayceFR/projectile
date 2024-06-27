@@ -1,3 +1,4 @@
+import Earth from "../earth/earth";
 import Challenge1 from "../physics/challenge1";
 import Challenge2 from "../physics/challenge2";
 import Challenge3 from "../physics/challenge3";
@@ -14,4 +15,5 @@ export const nav = [
   {path: "/5", name:"Challenge5", element:<Challenge5/>},
   {path: "/6", name:"Challenge6", element:<Challenge6/>},
   {path: "/7", name:"Challenge7", element:<Challenge7/>},
+  {path: "/earth", name: "Earth", element:<Earth/>},
 ]
