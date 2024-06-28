@@ -30,6 +30,8 @@ function Earth(props){
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.IcosahedronGeometry(1, 2)
     
     const group = new THREE.Group();
     group.rotation.z = -23.4 * Math.PI / 180;
@@ -61,7 +63,20 @@ function Earth(props){
       })
     )
     atmosphere.scale.set(1.1, 1.1, 1.1);
-    scene.add(atmosphere);
+    group.add(atmosphere);
+
+    const clouds = new THREE.Mesh(
+      new THREE.SphereGeometry(5, 50, 50),
+      new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load('Projectile/src/assets/clouds.jpg'),
+        blending: THREE.AdditiveBlending,
+        side: THREE.FrontSide,
+      })
+    )
+
+    clouds.scale.setScalar(1.03);
+
+    group.add(clouds);
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -71,7 +86,8 @@ function Earth(props){
       controls.update();
       renderer.render(scene, camera);
       window.requestAnimationFrame(animate);
-      sphere.rotation.y += 0.0005
+      sphere.rotation.y += 0.0005;
+      clouds.rotation.y += 0.0015;
     }
     animate()
 
