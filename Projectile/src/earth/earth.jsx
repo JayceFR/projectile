@@ -7,6 +7,8 @@ import fragmentShader from './shaders/fragment.glsl'
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+import { radians } from "../model/utils"
+import { calculatePointOnSphere, plot_lat_long } from "./utils"
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -30,21 +32,19 @@ function Earth(props){
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
-
-    const geometry = new THREE.IcosahedronGeometry(1, 2)
     
     const group = new THREE.Group();
-    group.rotation.z = -23.4 * Math.PI / 180;
+    // group.rotation.z = -23.4 * Math.PI / 180;
     scene.add(group);
 
     const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,50,50),
+      new THREE.SphereGeometry(5,32,32),
       new THREE.ShaderMaterial({
         vertexShader,
         fragmentShader,
         uniforms: {
           globeTexture: {
-            value: new THREE.TextureLoader().load("Projectile/src/assets/map.jpg")
+            value: new THREE.TextureLoader().load("Projectile/src/assets/map2.jpg")
           }
         }
         // map: new THREE.TextureLoader().load('Projectile/src/assets/map.jpg')
@@ -54,7 +54,7 @@ function Earth(props){
     group.add(sphere)
 
     const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,50,50),
+      new THREE.SphereGeometry(5,32,32),
       new THREE.ShaderMaterial({
         vertexShader: atmosVertexShader,
         fragmentShader: atmosFragmentShader,
@@ -66,11 +66,11 @@ function Earth(props){
     group.add(atmosphere);
 
     const clouds = new THREE.Mesh(
-      new THREE.SphereGeometry(5, 50, 50),
+      new THREE.SphereGeometry(5, 32, 32),
       new THREE.MeshBasicMaterial({
         map: new THREE.TextureLoader().load('Projectile/src/assets/clouds.jpg'),
         blending: THREE.AdditiveBlending,
-        side: THREE.FrontSide,
+        // side: THREE.FrontSide,
       })
     )
 
@@ -80,7 +80,29 @@ function Earth(props){
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    controls.minDistance = 12;
+    controls.maxDistance = 30;
+    controls.enablePan = false;
+    controls.update();
+    controls.saveState();
+
     window.addEventListener('resize', () => this.onWindowResize(), false);
+
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1, 16, 16),
+      new THREE.MeshBasicMaterial({
+        color:0xff0000,
+      })
+    )
+  
+    const radius = 5;
+    const latitude = 52.5200; 
+    const longitude = 13.4050; 
+    const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
+    const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
+    mesh.position.copy(vec_pos);
+
+    sphere.add(mesh)
 
     const animate = () => {
       controls.update();
