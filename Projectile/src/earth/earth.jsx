@@ -9,6 +9,7 @@ import atmosFragmentShader from './shaders/atmosFragment.glsl'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import { radians } from "../model/utils"
 import { calculatePointOnSphere, plot_lat_long } from "./utils"
+import { gen_points_3d } from "../model/projectile"
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -80,29 +81,43 @@ function Earth(props){
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    controls.minDistance = 12;
-    controls.maxDistance = 30;
+    // controls.minDistance = 12;
+    // controls.maxDistance = 30;
     controls.enablePan = false;
     controls.update();
     controls.saveState();
 
     window.addEventListener('resize', () => this.onWindowResize(), false);
 
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 16, 16),
-      new THREE.MeshBasicMaterial({
-        color:0xff0000,
-      })
-    )
+    // const mesh = new THREE.Mesh(
+    //   new THREE.SphereGeometry(0.1, 16, 16),
+    //   new THREE.MeshBasicMaterial({
+    //     color:0xff0000,
+    //   })
+    // )
+
+    const points = new THREE.Group();
   
     const radius = 5;
-    const latitude = 52.5200; 
-    const longitude = 13.4050; 
+    const latitude = 6.8165; 
+    const longitude = 39.2894; 
     const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
-    const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
-    mesh.position.copy(vec_pos);
 
-    sphere.add(mesh)
+    const ppoints = gen_points_3d(pointPosition, 30, 60, 20, 9.8, latitude);
+    for (let index = 0; index<ppoints.length; index++){
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.1, 16, 16),
+        new THREE.MeshBasicMaterial({
+          color:0xff0000,
+        })
+      )
+
+      const vec_pos = new THREE.Vector3(ppoints[index].x, ppoints[index].y, ppoints[index].z);
+      mesh.position.copy(vec_pos);
+      points.add(mesh);
+    }
+
+    sphere.add(points)
 
     const animate = () => {
       controls.update();

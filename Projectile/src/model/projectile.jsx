@@ -1,4 +1,4 @@
-import { convert_to_points, discriminant, gen_points, range } from "./utils";
+import { convert_to_points, discriminant, gen_points, radians, range } from "./utils";
 
 
 function minu(g, target_y, target_x, num_of_points, finish){
@@ -69,5 +69,46 @@ function distance_travelled(vel, g, rangle, prange){
   return a * (z_func(b) - z_func(c));
 }
 
-export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled}
+function gen_points_3d(start_loc, launch_angle, azimuth_angle, v0, g, lat){
+  const theta = radians(launch_angle);
+  const phi = radians(azimuth_angle);
+  const omega = 7.2921e-5
+  const R = 6371000
+  var velocity = {
+    x: v0 * Math.cos(theta) * Math.cos(phi),
+    y: v0 * Math.sin(theta),
+    z: v0 * Math.cos(theta) * Math.sin(phi)
+  }
+  const acceleration = {
+    x: 0,
+    y: -g,
+    z: 0, 
+  }
+  //verlet method
+  function verlet(loc, velocity, acceleration, dt){
+    let return_vel = {
+      x: (velocity.x + acceleration.x * dt),
+      y: (velocity.y + acceleration.y * dt),
+      z: (velocity.z + acceleration.z * dt)
+    }
+    console.log(velocity.y)
+    let return_loc = {
+      x: loc.x + return_vel.x * dt ,
+      y: loc.y + return_vel.y * dt ,
+      z: loc.z + return_vel.z * dt ,
+    }
+    return [return_loc, return_vel]
+  }
+  const time_step = 0.001
+  var loc = start_loc
+  let locs = [start_loc]
+  for (let x = 0; x<= 500; x++){
+    [loc, velocity] = verlet(loc, velocity, acceleration, time_step)
+    locs.push(loc);
+  }    
+  console.log(locs)
+  return locs
+}
+
+export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d}
 
