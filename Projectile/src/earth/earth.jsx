@@ -89,12 +89,12 @@ function Earth(props){
 
     window.addEventListener('resize', () => this.onWindowResize(), false);
 
-    // const mesh = new THREE.Mesh(
-    //   new THREE.SphereGeometry(0.1, 16, 16),
-    //   new THREE.MeshBasicMaterial({
-    //     color:0xff0000,
-    //   })
-    // )
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1, 16, 16),
+      new THREE.MeshBasicMaterial({
+        color:0xff0000,
+      })
+    )
 
     const points = new THREE.Group();
   
@@ -102,22 +102,42 @@ function Earth(props){
     const latitude = 6.8165; 
     const longitude = 39.2894; 
     const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
+    const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
+    mesh.position.copy(vec_pos);
+    points.add(mesh);
 
-    const ppoints = gen_points_3d(pointPosition, 30, 60, 20, 9.8, latitude);
-    for (let index = 0; index<ppoints.length; index++){
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.1, 16, 16),
-        new THREE.MeshBasicMaterial({
-          color:0xff0000,
-        })
-      )
+    const projectile = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 16, 16),
+      new THREE.MeshBasicMaterial({
+        color: 0xff0000
+      })
+    )
+    points.add(projectile);
 
-      const vec_pos = new THREE.Vector3(ppoints[index].x, ppoints[index].y, ppoints[index].z);
-      mesh.position.copy(vec_pos);
-      points.add(mesh);
-    }
+    const v0 = 0.05
+    const launch_angle = Math.PI / 4
+    const launch_direction = new THREE.Vector3(0, Math.sin(launch_angle), Math.cos(launch_angle)) 
+    const initial_vel = launch_direction.multiplyScalar(v0);
+    projectile.position.copy(vec_pos);
+
+    let velocity = initial_vel.clone();
 
     sphere.add(points)
+
+    let trajectory_points = [projectile.position.clone()];
+    let trajectory_geo = new THREE.BufferGeometry().setFromPoints(trajectory_points)
+    const trajectory_line = new THREE.Line(
+      trajectory_geo ,
+      new THREE.LineBasicMaterial({
+        color: 0xff00ff,
+        linewidth: 400
+      })
+    )
+
+    sphere.add(trajectory_line)
+
+    const earthCenter = new THREE.Vector3(0,0,0)
+    const gravityConstant = 0.001; 
 
     const animate = () => {
       controls.update();
@@ -125,6 +145,22 @@ function Earth(props){
       window.requestAnimationFrame(animate);
       sphere.rotation.y += 0.0005;
       clouds.rotation.y += 0.0015;
+      const directionToCenter = new THREE.Vector3().subVectors(earthCenter, projectile.position).normalize();
+      const gravity = directionToCenter.multiplyScalar(gravityConstant);
+      const distance_from_centre  = projectile.position.length();
+
+
+      const earth_radius = 5;
+      if (distance_from_centre <= earth_radius){
+        projectile.position.setLength(earth_radius);
+        velocity.set(0,0,0)
+      }
+      velocity.add(gravity);
+      projectile.position.add(velocity);
+
+      //update trajectory
+      trajectory_points.push(projectile.position.clone());
+      trajectory_geo.setFromPoints(trajectory_points);
     }
     animate()
 

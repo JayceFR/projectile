@@ -93,9 +93,9 @@ function gen_points_3d(start_loc, launch_angle, azimuth_angle, v0, g, lat){
     }
     console.log(velocity.y)
     let return_loc = {
-      x: loc.x + return_vel.x * dt ,
-      y: loc.y + return_vel.y * dt ,
-      z: loc.z + return_vel.z * dt ,
+      x: (loc.x + return_vel.x * dt) * 0.01 ,
+      y: (loc.y + return_vel.y * dt ) * 0.01,
+      z: (loc.z + return_vel.z * dt) * 0.01,
     }
     return [return_loc, return_vel]
   }
