@@ -8,8 +8,10 @@ import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import { radians } from "../model/utils"
-import { calculatePointOnSphere, plot_lat_long } from "./utils"
+import { calculatePointOnSphere, createCycloid, plot_lat_long } from "./utils"
 import { gen_points_3d } from "../model/projectile"
+
+import * as TWEEN from '@tweenjs/tween.js'
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -17,6 +19,9 @@ function Earth(props){
 
   useEffect(()=>{
     const scene = new THREE.Scene();
+
+    // const axes_helper = new THREE.AxesHelper(20);
+    // scene.add(axes_helper);
 
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -106,63 +111,96 @@ function Earth(props){
     mesh.position.copy(vec_pos);
     points.add(mesh);
 
-    const projectile = new THREE.Mesh(
-      new THREE.SphereGeometry(0.2, 16, 16),
-      new THREE.MeshBasicMaterial({
-        color: 0xff0000
-      })
-    )
-    points.add(projectile);
+    // const mesh2 = new THREE.Mesh(
+    //   new THREE.SphereGeometry(0.1, 16,15),
+    //   new THREE.MeshBasicMaterial({
+    //     color: 0xff0000,
+    //   })
+    // )
+    // mesh2.position.copy(new THREE.Vector3(0,0,0))
+    // points.add(mesh2)
 
-    const v0 = 0.05
-    const launch_angle = Math.PI / 4
-    const launch_direction = new THREE.Vector3(0, Math.sin(launch_angle), Math.cos(launch_angle)) 
+
+    const v0 = 0.1
+    const launch_angle = Math.PI -Math.PI / 4
+    const launch_direction = new THREE.Vector3(Math.cos(launch_angle), Math.sin(launch_angle), Math.cos(launch_angle)) 
     const initial_vel = launch_direction.multiplyScalar(v0);
-    projectile.position.copy(vec_pos);
-
-    let velocity = initial_vel.clone();
+    console.log("initial_vel", initial_vel)
 
     sphere.add(points)
 
-    let trajectory_points = [projectile.position.clone()];
-    let trajectory_geo = new THREE.BufferGeometry().setFromPoints(trajectory_points)
-    const trajectory_line = new THREE.Line(
-      trajectory_geo ,
-      new THREE.LineBasicMaterial({
-        color: 0xff00ff,
-        linewidth: 400
-      })
-    )
+    const centre = new THREE.Vector3(0,0,0);
+    let done = false
+    const proj_pos = vec_pos.clone();
+    const GM = 1
+    var projectiles = []
 
-    sphere.add(trajectory_line)
+    for(let i=0; i<=40; i+=1){
+      if (!done){
+        console.log("vel", initial_vel)
+        initial_vel.multiplyScalar(2)
+        const r = Math.sqrt(Math.pow(proj_pos.x, 2) + Math.pow(proj_pos.y, 2) + Math.pow(proj_pos.z, 2))
+        const a = new THREE.Vector3(proj_pos.x / Math.pow(r,3),  proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3)).normalize()
+        a.multiplyScalar(-GM);
+        console.log("acc", a)
+        initial_vel.add(a);
+        // const vector_to_centre = centre.clone()
+        // vector_to_centre.sub(proj_pos).normalize();
+        // initial_vel.add(vector_to_centre.multiplyScalar(0.001 + i * 0.75))
+        proj_pos.add(initial_vel);
+        const dist_from_centre = proj_pos.length();
+        if (dist_from_centre <= 5){
+          proj_pos.setLength(5.2)
+          done = true
+        }
+        console.log("dist from centre ", dist_from_centre);
+        projectiles.push(proj_pos)
+      } 
+    }
 
-    const earthCenter = new THREE.Vector3(0,0,0)
-    const gravityConstant = 0.001; 
+    console.log("projectiles", projectiles[projectiles.length - 1])
+    const end_pos = projectiles[projectiles.length - 1].clone()
+    const mid = new THREE.Vector3().addVectors(pointPosition, end_pos);
+    console.log(mid);
+    var [geom, ppoints] = createCycloid(
+      new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z),
+      new THREE.Vector3(end_pos.x, end_pos.y, end_pos.z),
+      mid.y, 
+      100, 
+      1);
 
-    const animate = () => {
+    var path = new THREE.CatmullRomCurve3(ppoints);
+    console.log("ppoints",ppoints)
+    const path_geometry = new THREE.BufferGeometry().setFromPoints(path.getPoints(50));
+    var mat = new THREE.LineBasicMaterial({
+      color: 0xff0000,
+      linewidth: 20,
+    });
+    var line = new THREE.Line(path_geometry, mat);
+    sphere.add(line);
+
+
+
+
+    const animate = (time) => {
       controls.update();
       renderer.render(scene, camera);
       window.requestAnimationFrame(animate);
       sphere.rotation.y += 0.0005;
-      clouds.rotation.y += 0.0015;
-      const directionToCenter = new THREE.Vector3().subVectors(earthCenter, projectile.position).normalize();
-      const gravity = directionToCenter.multiplyScalar(gravityConstant);
-      const distance_from_centre  = projectile.position.length();
+      clouds.rotation.y += 0.0015;  
 
-
-      const earth_radius = 5;
-      if (distance_from_centre <= earth_radius){
-        projectile.position.setLength(earth_radius);
-        velocity.set(0,0,0)
+      const t = (time / 1000 % 6) / 6;
+      try{
+        const position = path.getPointAt(t);
+        mesh.position.copy(position)
       }
-      velocity.add(gravity);
-      projectile.position.add(velocity);
-
-      //update trajectory
-      trajectory_points.push(projectile.position.clone());
-      trajectory_geo.setFromPoints(trajectory_points);
+      catch(err){
+        console.log(err);
+      }
+      
     }
-    animate()
+    animate();
+    
 
   }, [])
 
