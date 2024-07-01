@@ -7,11 +7,9 @@ import fragmentShader from './shaders/fragment.glsl'
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-import { radians } from "../model/utils"
-import { calculatePointOnSphere, createCycloid, plot_lat_long } from "./utils"
-import { gen_points_3d } from "../model/projectile"
-
-import * as TWEEN from '@tweenjs/tween.js'
+import {createCycloid, plot_lat_long } from "./utils"
+import mapURL from './assets/map2.jpg'
+import cloudsURL from './assets/clouds.jpg'
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -50,7 +48,7 @@ function Earth(props){
         fragmentShader,
         uniforms: {
           globeTexture: {
-            value: new THREE.TextureLoader().load("Projectile/src/assets/map2.jpg")
+            value: new THREE.TextureLoader().load(mapURL)
           }
         }
         // map: new THREE.TextureLoader().load('Projectile/src/assets/map.jpg')
@@ -74,7 +72,7 @@ function Earth(props){
     const clouds = new THREE.Mesh(
       new THREE.SphereGeometry(5, 32, 32),
       new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load('Projectile/src/assets/clouds.jpg'),
+        map: new THREE.TextureLoader().load(cloudsURL),
         blending: THREE.AdditiveBlending,
         // side: THREE.FrontSide,
       })
