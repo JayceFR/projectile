@@ -90,8 +90,14 @@ function Earth(props){
     controls.enablePan = false;
     controls.update();
     controls.saveState();
+    controls.enableDamping = true
+    controls.dampingFactor = 0.1
 
-    window.addEventListener('resize', () => this.onWindowResize(), false);
+    window.addEventListener('resize', () =>{
+     camera.aspect = window.innerWidth / window.innerHeight;
+     camera.updateProjectionMatrix();
+     renderer.setSize(window.innerWidth, window.innerHeight); 
+    });
 
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.1, 16, 16),
@@ -103,8 +109,8 @@ function Earth(props){
     const points = new THREE.Group();
   
     const radius = 5;
-    const latitude = -16.703548; 
-    const longitude = -50.857608; 
+    const latitude = 20.5937; 
+    const longitude = 78.9629; 
     const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
     console.log("long, lat", convert_to_lat_long(pointPosition.x, pointPosition.y, pointPosition.z))
     const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
@@ -122,12 +128,13 @@ function Earth(props){
 
 
     const v0 = 0.1
-    const launch_angle = Math.PI -Math.PI / 4
+    const launch_angle = -Math.PI / 6
     const launch_direction = new THREE.Vector3(Math.cos(launch_angle), Math.sin(launch_angle), Math.cos(launch_angle)) 
     const initial_vel = launch_direction.multiplyScalar(v0);
 
     //Taking angular speed of earth into account
-    initial_vel.setX(initial_vel.x += Math.cos(radians(latitude)) * 0.3)
+    initial_vel.setX(initial_vel.x += Math.cos(radians(latitude)) * 0.01)
+    initial_vel.setZ(initial_vel.z += Math.cos(radians(latitude)) * 0.01)
 
     console.log("initial_vel", initial_vel, Math.cos(radians(latitude)) * 0.1)
 
@@ -149,9 +156,6 @@ function Earth(props){
         a.multiplyScalar(-GM);
         console.log("acc", a)
         initial_vel.add(a);
-        // const vector_to_centre = centre.clone()
-        // vector_to_centre.sub(proj_pos).normalize();
-        // initial_vel.add(vector_to_centre.multiplyScalar(0.001 + i * 0.75))
         proj_pos.add(initial_vel);
         const dist_from_centre = proj_pos.length();
         if (dist_from_centre <= 5){
@@ -188,7 +192,34 @@ function Earth(props){
     var line = new THREE.Line(path_geometry, mat);
     sphere.add(line);
 
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
 
+    function onMouseClick(event){
+      pointer.x = (event.clientX/ window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObject(sphere);
+      if (intersects.length > 0){
+        console.log("I am here")
+        const intersect = intersects[0]
+        const point = intersect.point
+        const [lat, lon] = convert_to_lat_long(point.x, point.y + 0.8, point.z);
+        console.log(lat, lon)
+        const marker = new THREE.Mesh(
+          new THREE.SphereGeometry(0.1, 16, 16),
+          new THREE.MeshBasicMaterial({
+            color:0xff0000,
+          })
+        )
+        const mark_pos = plot_lat_long(5.2, lat, lon);
+        marker.position.copy(mark_pos);
+        // marker.position.copy(point.clone());
+        points.add(marker);
+      }
+    }
+
+    window.addEventListener('click', onMouseClick, false)
 
 
     const animate = (time) => {
@@ -206,7 +237,6 @@ function Earth(props){
       catch(err){
         console.log(err);
       }
-      
     }
     animate();
     
