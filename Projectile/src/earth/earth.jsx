@@ -6,98 +6,25 @@ import fragmentShader from './shaders/fragment.glsl'
 
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {convert_to_lat_long, createCycloid, plot_lat_long } from "./utils"
 import mapURL from './assets/map2.jpg'
 import cloudsURL from './assets/clouds.jpg'
 import { radians } from "../model/utils"
+import Init from "./init"
+import Globe from "./globe"
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
 function Earth(props){
 
   useEffect(()=>{
-    const scene = new THREE.Scene();
 
-    // const axes_helper = new THREE.AxesHelper(20);
-    // scene.add(axes_helper);
-
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 15;
-    const canvas = document.getElementById('mycanvas');
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.appendChild(renderer.domElement);
+    const display = new Init('mycanvas');
+    display.initialize()
     
-    const group = new THREE.Group();
+    const globe = new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL);
     // group.rotation.z = -23.4 * Math.PI / 180;
-    scene.add(group);
-
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,32,32),
-      new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: {
-          globeTexture: {
-            value: new THREE.TextureLoader().load(mapURL)
-          }
-        }
-        // map: new THREE.TextureLoader().load('Projectile/src/assets/map.jpg')
-      })
-    );
-
-    group.add(sphere)
-
-    const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,32,32),
-      new THREE.ShaderMaterial({
-        vertexShader: atmosVertexShader,
-        fragmentShader: atmosFragmentShader,
-        blending: THREE.AdditiveBlending,
-        side: THREE.BackSide
-      })
-    )
-    atmosphere.scale.set(1.1, 1.1, 1.1);
-    group.add(atmosphere);
-
-    const clouds = new THREE.Mesh(
-      new THREE.SphereGeometry(5, 32, 32),
-      new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load(cloudsURL),
-        blending: THREE.AdditiveBlending,
-        // side: THREE.FrontSide,
-      })
-    )
-
-    clouds.scale.setScalar(1.03);
-
-    group.add(clouds);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-
-    // controls.minDistance = 12;
-    // controls.maxDistance = 30;
-    controls.enablePan = false;
-    controls.update();
-    controls.saveState();
-    controls.enableDamping = true
-    controls.dampingFactor = 0.1
-
-    window.addEventListener('resize', () =>{
-     camera.aspect = window.innerWidth / window.innerHeight;
-     camera.updateProjectionMatrix();
-     renderer.setSize(window.innerWidth, window.innerHeight); 
-    });
+    display.scene.add(globe.display());
 
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.1, 16, 16),
@@ -107,6 +34,7 @@ function Earth(props){
     )
 
     const points = new THREE.Group();
+    globe.sphere.add(points)
   
     const radius = 5;
     const latitude = 20.5937; 
@@ -116,16 +44,6 @@ function Earth(props){
     const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
     mesh.position.copy(vec_pos);
     points.add(mesh);
-
-    // const mesh2 = new THREE.Mesh(
-    //   new THREE.SphereGeometry(0.1, 16,15),
-    //   new THREE.MeshBasicMaterial({
-    //     color: 0xff0000,
-    //   })
-    // )
-    // mesh2.position.copy(pointPosition)
-    // points.add(mesh2)
-
 
     const v0 = 0.1
     const launch_angle = -Math.PI / 6
@@ -137,8 +55,6 @@ function Earth(props){
     initial_vel.setZ(initial_vel.z += Math.cos(radians(latitude)) * 0.01)
 
     console.log("initial_vel", initial_vel, Math.cos(radians(latitude)) * 0.1)
-
-    sphere.add(points)
 
     const centre = new THREE.Vector3(0,0,0);
     let done = false
@@ -171,10 +87,6 @@ function Earth(props){
     const end_pos = projectiles[projectiles.length - 1].clone()
     const mid = new THREE.Vector3().addVectors(pointPosition, end_pos);
     const mid_r = Math.sqrt(Math.pow(mid.x, 2) + Math.pow(mid.y, 2) + Math.pow(mid.z, 2))
-    if (mid_r <= 5){
-      console.log("EROORORORO")
-    }
-    console.log(mid);
     var [geom, ppoints] = createCycloid(
       new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z),
       new THREE.Vector3(end_pos.x, end_pos.y, end_pos.z),
@@ -190,7 +102,7 @@ function Earth(props){
       linewidth: 20,
     });
     var line = new THREE.Line(path_geometry, mat);
-    sphere.add(line);
+    globe.sphere.add(line);
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -198,8 +110,8 @@ function Earth(props){
     function onMouseClick(event){
       pointer.x = (event.clientX/ window.innerWidth) * 2 - 1;
       pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-      const intersects = raycaster.intersectObject(sphere);
+      raycaster.setFromCamera(pointer, display.camera);
+      const intersects = raycaster.intersectObject(globe.sphere);
       if (intersects.length > 0){
         console.log("I am here")
         const intersect = intersects[0]
@@ -219,15 +131,13 @@ function Earth(props){
       }
     }
 
-    window.addEventListener('click', onMouseClick, false)
+    window.addEventListener('contextmenu', onMouseClick, false)
 
 
     const animate = (time) => {
-      controls.update();
-      renderer.render(scene, camera);
+      display.animate();
+      globe.animate();
       window.requestAnimationFrame(animate);
-      sphere.rotation.y += 0.0005;
-      clouds.rotation.y += 0.0015;  
 
       const t = (time / 1000 % 6) / 6;
       try{
