@@ -6,12 +6,12 @@ import fragmentShader from './shaders/fragment.glsl'
 
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
-import {convert_to_lat_long, createCycloid, plot_lat_long } from "./utils"
+import {convert_to_lat_long, createCycloid, plot_lat_long } from "./scripts/utils"
 import mapURL from './assets/map2.jpg'
 import cloudsURL from './assets/clouds.jpg'
 import { radians } from "../model/utils"
-import Init from "./init"
-import Globe from "./globe"
+import Init from "./scripts/init"
+import Globe from "./scripts/globe"
 
 console.log(atmosVertexShader, atmosFragmentShader)
 

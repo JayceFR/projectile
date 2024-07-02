@@ -1,4 +1,4 @@
-import { radians } from "../model/utils";
+import { radians } from "../../model/utils";
 
 import * as THREE from 'three'
 
