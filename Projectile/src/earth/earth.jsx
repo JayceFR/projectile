@@ -7,9 +7,10 @@ import fragmentShader from './shaders/fragment.glsl'
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-import {createCycloid, plot_lat_long } from "./utils"
+import {convert_to_lat_long, createCycloid, plot_lat_long } from "./utils"
 import mapURL from './assets/map2.jpg'
 import cloudsURL from './assets/clouds.jpg'
+import { radians } from "../model/utils"
 
 console.log(atmosVertexShader, atmosFragmentShader)
 
@@ -102,9 +103,10 @@ function Earth(props){
     const points = new THREE.Group();
   
     const radius = 5;
-    const latitude = 6.8165; 
-    const longitude = 39.2894; 
+    const latitude = -16.703548; 
+    const longitude = -50.857608; 
     const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
+    console.log("long, lat", convert_to_lat_long(pointPosition.x, pointPosition.y, pointPosition.z))
     const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
     mesh.position.copy(vec_pos);
     points.add(mesh);
@@ -115,7 +117,7 @@ function Earth(props){
     //     color: 0xff0000,
     //   })
     // )
-    // mesh2.position.copy(new THREE.Vector3(0,0,0))
+    // mesh2.position.copy(pointPosition)
     // points.add(mesh2)
 
 
@@ -123,7 +125,11 @@ function Earth(props){
     const launch_angle = Math.PI -Math.PI / 4
     const launch_direction = new THREE.Vector3(Math.cos(launch_angle), Math.sin(launch_angle), Math.cos(launch_angle)) 
     const initial_vel = launch_direction.multiplyScalar(v0);
-    console.log("initial_vel", initial_vel)
+
+    //Taking angular speed of earth into account
+    initial_vel.setX(initial_vel.x += Math.cos(radians(latitude)) * 0.3)
+
+    console.log("initial_vel", initial_vel, Math.cos(radians(latitude)) * 0.1)
 
     sphere.add(points)
 
@@ -131,6 +137,7 @@ function Earth(props){
     let done = false
     const proj_pos = vec_pos.clone();
     const GM = 1
+    const w = 0.0000729
     var projectiles = []
 
     for(let i=0; i<=40; i+=1){
@@ -138,7 +145,7 @@ function Earth(props){
         console.log("vel", initial_vel)
         initial_vel.multiplyScalar(2)
         const r = Math.sqrt(Math.pow(proj_pos.x, 2) + Math.pow(proj_pos.y, 2) + Math.pow(proj_pos.z, 2))
-        const a = new THREE.Vector3(proj_pos.x / Math.pow(r,3),  proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3)).normalize()
+        const a = new THREE.Vector3(proj_pos.x / Math.pow(r,3), proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3)).normalize()
         a.multiplyScalar(-GM);
         console.log("acc", a)
         initial_vel.add(a);
@@ -159,11 +166,15 @@ function Earth(props){
     console.log("projectiles", projectiles[projectiles.length - 1])
     const end_pos = projectiles[projectiles.length - 1].clone()
     const mid = new THREE.Vector3().addVectors(pointPosition, end_pos);
+    const mid_r = Math.sqrt(Math.pow(mid.x, 2) + Math.pow(mid.y, 2) + Math.pow(mid.z, 2))
+    if (mid_r <= 5){
+      console.log("EROORORORO")
+    }
     console.log(mid);
     var [geom, ppoints] = createCycloid(
       new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z),
       new THREE.Vector3(end_pos.x, end_pos.y, end_pos.z),
-      mid.y, 
+      mid_r/10, 
       100, 
       1);
 

@@ -28,6 +28,13 @@ function plot_lat_long(radius, latitude, longitude){
 
 }
 
+function convert_to_lat_long(x, y, z){
+  const R = 5
+  const lat = Math.asin(y/R) * (180 / Math.PI)
+  const long = -1 * Math.atan2(z,x) * (180 / Math.PI)
+  return [lat, long]
+}
+
 function createCycloid(startPoint, endPoint, peak, divisions, cycles) {
 
   let division = divisions || 100;
@@ -77,4 +84,4 @@ function createCycloid(startPoint, endPoint, peak, divisions, cycles) {
 }
 
 
-export {calculatePointOnSphere, plot_lat_long, createCycloid}
+export {calculatePointOnSphere, plot_lat_long, createCycloid, convert_to_lat_long}
