@@ -25,7 +25,7 @@ export default class Globe{
         side: THREE.BackSide
       })
     )
-    this.atmosphere.scale.set(1.1, 1.1, 1.1)
+    this.atmosphere.scale.set(1.2, 1.2, 1.2)
     this.globe.add(this.atmosphere);
 
     this.clouds = new THREE.Mesh(

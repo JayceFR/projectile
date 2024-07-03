@@ -26,9 +26,12 @@ function Earth(props){
 
   const [path_geo, setPathGeo] = useState(null);
 
+  const [lat_land, setLatLand] = useState(0);
+  const [long_land, setLongLand] = useState(0);
+
   useEffect(()=>{
 
-    const display = new Init('mycanvas');
+    const display = new Init('mycanvas', "econtroller");
     display.initialize()
     
     const globe = new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL);
@@ -51,8 +54,7 @@ function Earth(props){
     mesh.position.copy(vec_pos);
     points.add(mesh);
 
-    var ppoints = gen_3d_trajectory_points(launch_angle, v0, latitude, vec_pos, pointPosition)
-
+    var [ppoints, end_pos] = gen_3d_trajectory_points(launch_angle, v0, latitude, vec_pos, pointPosition)
     var path = new THREE.CatmullRomCurve3(ppoints);
     const path_geometry = new THREE.BufferGeometry().setFromPoints(path.getPoints(50));
     var mat = new THREE.LineBasicMaterial({
@@ -61,6 +63,11 @@ function Earth(props){
     });
     var line = new THREE.Line(path_geometry, mat);
     globe.sphere.add(line);
+
+    //Land Lat and Long
+    const [llat, llong] = convert_to_lat_long(end_pos.x, end_pos.y, end_pos.z)
+    setLatLand(llat);
+    setLongLand(llong);
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -114,15 +121,23 @@ function Earth(props){
 
   return (
     <>
+    <div className="parent">
       <div className="controls">
         <Input name={"launch angle"} unit={"deg"} value={angle} change_method={setAngle} type={'float'}/>
         <Input name={"launch speed"} unit={"ms^-1"} value={v0} change_method={setV0} type={'float'}/>
         <Input name={"latitude"} unit={"deg"} value={latitude} change_method={setLatitude} type={'float'}/>
         <Input name={"longitude"} value={longitude} unit={"deg"} change_method={setLongitude} type = {'float'}/>
       </div>
-      <div>
+      <div id="econtroller">
         <canvas id="mycanvas"/>
+        <div className="lalong">
+          <p>Latitude of Landing Point : {lat_land.toPrecision(6)}</p>
+          <p>Longitude of Landing Point : {long_land.toPrecision(6)}</p>
+        </div>
       </div>
+    </div>
+    
+      
     </>
   )
 }

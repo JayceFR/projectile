@@ -154,7 +154,7 @@ const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosi
     100, 
     1
   );
-  return ppoints;
+  return [ppoints, end_pos];
 }
 
 export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d, gen_3d_trajectory_points}

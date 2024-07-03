@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 export default class Init {
-  constructor (canvasID){
+  constructor (canvasID, canvasContainterID){
     this.scene = undefined
     this.camera = undefined
     this.renderer = undefined
@@ -11,6 +11,7 @@ export default class Init {
     this.nearPlane = 1
     this.farPlane = 1000
     this.canvasID = canvasID
+    this.canvasContainterID = canvasContainterID
 
     this.clock = undefined
     this.controls = undefined
@@ -21,9 +22,10 @@ export default class Init {
 
   initialize(){
     this.scene = new THREE.Scene();
+    const canvas_container = document.getElementById(this.canvasContainterID)
     this.camera = new THREE.PerspectiveCamera(
       this.fov,
-      window.innerWidth / window.innerHeight,
+      (window.innerWidth * 0.75) / (window.innerHeight ),
       0.1,
       1000
     )
@@ -34,13 +36,13 @@ export default class Init {
       antialias: true
     });
 
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerWidth * 0.75, window.innerHeight );
     document.body.appendChild(this.renderer.domElement)
 
     this.clock = new THREE.Clock();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.minDistance = 12;
-    this.controls.maxDistance = 30;
+    this.controls.minDistance = 11;
+    this.controls.maxDistance = 19;
     this.controls.enablePan = false;
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
@@ -51,9 +53,9 @@ export default class Init {
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.aspect = (window.innerWidth * 0.75) / (window.innerHeight);
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerWidth * 0.75, window.innerHeight);
   }
 
   animate() {
