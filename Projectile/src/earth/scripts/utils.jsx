@@ -79,7 +79,7 @@ function createCycloid(startPoint, endPoint, peak, divisions, cycles) {
     points.push(new THREE.Vector3().copy(v3Inter).setLength(newLength));
   }
 
-  return [new THREE.BufferGeometry().setFromPoints(points), points];
+  return points;
 
 }
 

@@ -1,4 +1,6 @@
+import { Vector3 } from "three";
 import { convert_to_points, discriminant, gen_points, radians, range } from "./utils";
+import { createCycloid } from "../earth/scripts/utils";
 
 
 function minu(g, target_y, target_x, num_of_points, finish){
@@ -110,5 +112,50 @@ function gen_points_3d(start_loc, launch_angle, azimuth_angle, v0, g, lat){
   return locs
 }
 
-export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d}
+const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosition ) => {
+  const launch_direction = new Vector3(Math.cos(launch_angle), Math.sin(launch_angle), Math.cos(launch_angle)) 
+  const initial_vel = launch_direction.multiplyScalar(v0);
+
+  //Taking angular speed of earth into account
+  initial_vel.setX(initial_vel.x += Math.cos(radians(latitude)) * 0.01)
+  initial_vel.setZ(initial_vel.z += Math.cos(radians(latitude)) * 0.01)
+
+  // console.log("initial_vel", initial_vel, Math.cos(radians(latitude)) * 0.1)
+
+  let done = false
+  const proj_pos = vec_pos.clone();
+  const GM = 1
+  const w = 0.0000729
+  var projectiles = []
+
+  for(let i=0; i<=40; i+=1){
+    if (!done){
+      initial_vel.multiplyScalar(2)
+      const r = Math.sqrt(Math.pow(proj_pos.x, 2) + Math.pow(proj_pos.y, 2) + Math.pow(proj_pos.z, 2))
+      const a = new Vector3(proj_pos.x / Math.pow(r,3), proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3)).normalize()
+      a.multiplyScalar(-GM);
+      initial_vel.add(a);
+      proj_pos.add(initial_vel);
+      const dist_from_centre = proj_pos.length();
+      if (dist_from_centre <= 5){
+        proj_pos.setLength(5.2)
+        done = true
+      }
+      projectiles.push(proj_pos)
+    } 
+  }
+  const end_pos = projectiles[projectiles.length - 1].clone()
+  const mid = new Vector3().addVectors(pointPosition, end_pos);
+  const mid_r = Math.sqrt(Math.pow(mid.x, 2) + Math.pow(mid.y, 2) + Math.pow(mid.z, 2))
+  var ppoints = createCycloid(
+    new Vector3(pointPosition.x, pointPosition.y, pointPosition.z),
+    new Vector3(end_pos.x, end_pos.y, end_pos.z),
+    mid_r/10, 
+    100, 
+    1
+  );
+  return ppoints;
+}
+
+export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d, gen_3d_trajectory_points}
 
