@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react"
-import * as THREE from 'three'
-
 import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
 
 import atmosVertexShader from './shaders/atmosVertex.glsl'
 import atmosFragmentShader from './shaders/atmosFragment.glsl'
-import {convert_to_lat_long, createCycloid, plot_lat_long } from "./scripts/utils"
+import {convert_to_lat_long, plot_lat_long } from "./scripts/utils"
 import mapURL from './assets/map2.jpg'
 import cloudsURL from './assets/clouds.jpg'
-import { radians } from "../model/utils"
 import Init from "./scripts/init"
 import Globe from "./scripts/globe"
 import Input from "../components/input"
-import { gen_3d_trajectory_points } from "../model/projectile"
+import { Trajectory } from "./scripts/trajectory"
+import { MeshBasicMaterial, Raycaster, SphereGeometry, Vector2 } from "three"
 
 function Earth(props){
 
@@ -24,7 +22,8 @@ function Earth(props){
   const [v0, setV0] = useState(0.1);
   const [angle, setAngle] = useState(45)
 
-  const [path_geo, setPathGeo] = useState(null);
+  const [globe, setGlobe] = useState(new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL));
+  const [trajectory, setTrajectory] = useState(new Trajectory());
 
   const [lat_land, setLatLand] = useState(0);
   const [long_land, setLongLand] = useState(0);
@@ -33,44 +32,18 @@ function Earth(props){
 
     const display = new Init('mycanvas', "econtroller");
     display.initialize()
-    
-    const globe = new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL);
+
     // group.rotation.z = -23.4 * Math.PI / 180;
     display.scene.add(globe.display());
 
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 16, 16),
-      new THREE.MeshBasicMaterial({
-        color:0xff0000,
-      })
-    )
+    const [lat, long] = trajectory.update(angle, radius , latitude, longitude, v0);
+    setLatLand(lat)
+    setLongLand(long)
 
-    const points = new THREE.Group();
-    globe.sphere.add(points)
-    
-    const launch_angle = radians(angle);
-    const pointPosition = plot_lat_long(radius + 0.2, latitude, longitude)
-    const vec_pos = new THREE.Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
-    mesh.position.copy(vec_pos);
-    points.add(mesh);
+    globe.sphere.add(trajectory.point)
 
-    var [ppoints, end_pos] = gen_3d_trajectory_points(launch_angle, v0, latitude, vec_pos, pointPosition)
-    var path = new THREE.CatmullRomCurve3(ppoints);
-    const path_geometry = new THREE.BufferGeometry().setFromPoints(path.getPoints(50));
-    var mat = new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      linewidth: 20,
-    });
-    var line = new THREE.Line(path_geometry, mat);
-    globe.sphere.add(line);
-
-    //Land Lat and Long
-    const [llat, llong] = convert_to_lat_long(end_pos.x, end_pos.y, end_pos.z)
-    setLatLand(llat);
-    setLongLand(llong);
-
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
+    const raycaster = new Raycaster();
+    const pointer = new Vector2();
 
     function onMouseClick(event){
       pointer.x = (event.clientX/ window.innerWidth) * 2 - 1;
@@ -82,8 +55,8 @@ function Earth(props){
         const point = intersect.point
         const [lat, lon] = convert_to_lat_long(point.x, point.y + 0.8, point.z);
         const marker = new THREE.Mesh(
-          new THREE.SphereGeometry(0.1, 16, 16),
-          new THREE.MeshBasicMaterial({
+          new SphereGeometry(0.1, 16, 16),
+          new MeshBasicMaterial({
             color:0xff0000,
           })
         )
@@ -95,27 +68,28 @@ function Earth(props){
 
     window.addEventListener('contextmenu', onMouseClick, false)
 
-    setPathGeo(path_geometry)
-
-
     const animate = (time) => {
       display.animate();
       globe.animate();
+      trajectory.animate(time);
       window.requestAnimationFrame(animate);
 
-      const t = (time / 1000 % 6) / 6;
-      try{
-        const position = path.getPointAt(t);
-        mesh.position.copy(position)
-      }
-      catch(err){
-        console.log(err);
-      }
     }
     animate();
     
 
   }, [])
+
+  useEffect(() => {
+    globe.sphere.remove(trajectory.line)
+    const [lat, long] = trajectory.update(angle, radius , latitude, longitude, v0);
+    globe.sphere.add(trajectory.line)
+    setLatLand(lat)
+    setLongLand(long)
+    return () => {
+      globe.sphere.remove(trajectory.line);
+    }
+  }, [angle, latitude, longitude, v0])
 
 
 
