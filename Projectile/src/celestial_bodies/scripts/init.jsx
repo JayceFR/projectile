@@ -1,4 +1,5 @@
-import * as THREE from 'three'
+
+import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 export default class Init {
@@ -21,9 +22,9 @@ export default class Init {
   }
 
   initialize(){
-    this.scene = new THREE.Scene();
+    this.scene = new Scene();
     const canvas_container = document.getElementById(this.canvasContainterID)
-    this.camera = new THREE.PerspectiveCamera(
+    this.camera = new PerspectiveCamera(
       this.fov,
       (window.innerWidth * 0.75) / (window.innerHeight ),
       0.1,
@@ -31,7 +32,7 @@ export default class Init {
     )
     this.camera.position.z = 15
     const canvas = document.getElementById(this.canvasID);
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       canvas,
       antialias: true
     });
@@ -39,7 +40,7 @@ export default class Init {
     this.renderer.setSize(window.innerWidth * 0.75, window.innerHeight );
     document.body.appendChild(this.renderer.domElement)
 
-    this.clock = new THREE.Clock();
+    this.clock = new Clock();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.minDistance = 11;
     this.controls.maxDistance = 19;

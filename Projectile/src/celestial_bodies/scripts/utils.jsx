@@ -1,6 +1,4 @@
-import { radians } from "../../model/utils";
-
-import * as THREE from 'three'
+import { Triangle, Vector3 } from "three";
 
 function calculatePointOnSphere(radius, theta, phi) {
   const x = radius * Math.sin(phi) * Math.cos(theta);
@@ -52,21 +50,21 @@ function createCycloid(startPoint, endPoint, peak, divisions, cycles) {
   let peakRatio = peak / diameterMinor;
 
   let radiusMajor = startPoint.length() + radiusMinor;
-  let basisMajor = new THREE.Vector3().copy(startPoint).setLength(radiusMajor);
+  let basisMajor = new Vector3().copy(startPoint).setLength(radiusMajor);
 
-  let basisMinor = new THREE.Vector3().copy(startPoint).negate().setLength(radiusMinor);
+  let basisMinor = new Vector3().copy(startPoint).negate().setLength(radiusMinor);
 
 
   // triangle (start, end, center)
-  let tri = new THREE.Triangle(startPoint, endPoint, new THREE.Vector3());
-  let nrm = new THREE.Vector3(); // normal
+  let tri = new Triangle(startPoint, endPoint, new Vector3());
+  let nrm = new Vector3(); // normal
   tri.getNormal(nrm);
 
   // rotate startPoint around normal
   let angleStep = angle / division;
-  let v3Major = new THREE.Vector3();
-  let v3Minor = new THREE.Vector3();
-  let v3Inter = new THREE.Vector3();
+  let v3Major = new Vector3();
+  let v3Minor = new Vector3();
+  let v3Inter = new Vector3();
   for (let i = 0; i <= division; i++) {
     let divisionRatio = i / division;
     let angleValue = angle * divisionRatio;
@@ -76,7 +74,7 @@ function createCycloid(startPoint, endPoint, peak, divisions, cycles) {
     v3Inter.addVectors(v3Major, v3Minor);
     let newLength = ((v3Inter.length() - radius) * peakRatio) + radius;
 
-    points.push(new THREE.Vector3().copy(v3Inter).setLength(newLength));
+    points.push(new Vector3().copy(v3Inter).setLength(newLength));
   }
 
   return points;
