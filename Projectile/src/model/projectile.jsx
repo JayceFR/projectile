@@ -1,6 +1,6 @@
 import { Vector3 } from "three";
 import { convert_to_points, discriminant, gen_points, radians, range } from "./utils";
-import { createCycloid } from "../earth/scripts/utils";
+import { createCycloid } from "../celestial_bodies/scripts/utils";
 
 
 function minu(g, target_y, target_x, num_of_points, finish){
@@ -112,7 +112,7 @@ function gen_points_3d(start_loc, launch_angle, azimuth_angle, v0, g, lat){
   return locs
 }
 
-const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosition ) => {
+const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosition, GM ) => {
   const launch_direction = new Vector3(Math.cos(launch_angle), Math.sin(launch_angle), Math.cos(launch_angle)) 
   const initial_vel = launch_direction.multiplyScalar(v0);
 
@@ -124,7 +124,6 @@ const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosi
 
   let done = false
   const proj_pos = vec_pos.clone();
-  const GM = 1
   const w = 0.0000729
   var projectiles = []
 
@@ -132,7 +131,7 @@ const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosi
     if (!done){
       initial_vel.multiplyScalar(2)
       const r = Math.sqrt(Math.pow(proj_pos.x, 2) + Math.pow(proj_pos.y, 2) + Math.pow(proj_pos.z, 2))
-      const a = new Vector3(proj_pos.x / Math.pow(r,3), proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3)).normalize()
+      const a = new Vector3(proj_pos.x / Math.pow(r,3), proj_pos.y / Math.pow(r,3), proj_pos.z / Math.pow(r,3))
       a.multiplyScalar(-GM);
       initial_vel.add(a);
       proj_pos.add(initial_vel);

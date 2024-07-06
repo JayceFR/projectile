@@ -1,4 +1,6 @@
-import Earth from "../earth/earth";
+import Earth from "../celestial_bodies/earth";
+import Mars from "../celestial_bodies/marjs";
+import Moon from "../celestial_bodies/moon";
 import Challenge1 from "../physics/challenge1";
 import Challenge2 from "../physics/challenge2";
 import Challenge3 from "../physics/challenge3";
@@ -16,4 +18,6 @@ export const nav = [
   {path: "/6", name:"Challenge6", element:<Challenge6/>},
   {path: "/7", name:"Challenge7", element:<Challenge7/>},
   {path: "/earth", name: "Earth", element:<Earth/>},
+  {path: "/mars", name: "Mars", element:<Mars/>},
+  {path: "/moon", name: "Moon", element:<Moon/>},
 ]
