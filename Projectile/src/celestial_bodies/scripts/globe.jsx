@@ -1,16 +1,17 @@
-import * as THREE from 'three'
+
+import { Group, Mesh, ShaderMaterial, SphereGeometry, TextureLoader, AdditiveBlending, BackSide, MeshBasicMaterial} from "three";
 
 export default class Globe{
   constructor(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL, colour, strength){
-    this.globe = new THREE.Group();
-    this.sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,32,32),
-      new THREE.ShaderMaterial({
+    this.globe = new Group(); 
+    this.sphere = new Mesh(
+      new SphereGeometry(5,32,32),
+      new ShaderMaterial({
         vertexShader,
         fragmentShader,
         uniforms: {
           globeTexture: {
-            value: new THREE.TextureLoader().load(mapURL)
+            value: new TextureLoader().load(mapURL)
           },
           colour : {value: colour}
         },
@@ -18,17 +19,17 @@ export default class Globe{
       })
     );
     this.globe.add(this.sphere);
-    this.atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(5,32,32),
-      new THREE.ShaderMaterial({
+    this.atmosphere = new Mesh(
+      new SphereGeometry(5,32,32),
+      new ShaderMaterial({
         vertexShader: atmosVertexShader,
         fragmentShader: atmosFragmentShader,
         uniforms: {
           colour: {value: colour},
           strength: {value: strength}
         },
-        blending: THREE.AdditiveBlending,
-        side: THREE.BackSide
+        blending: AdditiveBlending,
+        side: BackSide
       })
     )
     this.atmosphere.scale.set(1.2, 1.2, 1.2)
@@ -38,11 +39,11 @@ export default class Globe{
 
     if (cloudsURL){
       this.isclouds = true;
-      this.clouds = new THREE.Mesh(
-        new THREE.SphereGeometry(5, 32, 32),
-        new THREE.MeshBasicMaterial({
-          map: new THREE.TextureLoader().load(cloudsURL),
-          blending: THREE.AdditiveBlending,
+      this.clouds = new Mesh(
+        new SphereGeometry(5, 32, 32),
+        new MeshBasicMaterial({
+          map: new TextureLoader().load(cloudsURL),
+          blending: AdditiveBlending,
         })
       )
       this.clouds.scale.setScalar(1.03);
