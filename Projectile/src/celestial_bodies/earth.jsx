@@ -21,7 +21,7 @@ function Earth(props){
   const [v0, setV0] = useState(0.1);
   const [angle, setAngle] = useState(45)
 
-  const [globe, setGlobe] = useState(new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL, new Vector3(0.3, 0.6, 1.0), 0.6));
+  const [globe, setGlobe] = useState(new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL, new Vector3(0.3, 0.6, 1.0), 0.6, radius));
   const [trajectory, setTrajectory] = useState(new Trajectory());
 
   const [lat_land, setLatLand] = useState(0);

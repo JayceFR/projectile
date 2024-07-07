@@ -26,8 +26,8 @@ function plot_lat_long(radius, latitude, longitude){
 
 }
 
-function convert_to_lat_long(x, y, z){
-  const R = 5
+function convert_to_lat_long(x, y, z, radius){
+  const R = radius
   const lat = Math.asin(y/R) * (180 / Math.PI)
   const long = -1 * Math.atan2(z,x) * (180 / Math.PI)
   return [lat, long]

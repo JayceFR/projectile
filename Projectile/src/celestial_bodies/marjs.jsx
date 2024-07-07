@@ -14,14 +14,14 @@ import { Vector3 } from "three"
 
 function Mars(props){
 
-  const [radius, setRadius] = useState(5)
+  const [radius, setRadius] = useState(4)
   const [latitude, setLatitude] = useState(20.5937)
   const [longitude, setLongitude] = useState(78.9629)
 
   const [v0, setV0] = useState(0.1);
   const [angle, setAngle] = useState(45)
 
-  const [globe, setGlobe] = useState(new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, null, new Vector3(0.9, 0.5, 0.4), 0.5));
+  const [globe, setGlobe] = useState(new Globe(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, null, new Vector3(0.9, 0.5, 0.4), 0.5, radius));
   const [trajectory, setTrajectory] = useState(new Trajectory());
 
   const [lat_land, setLatLand] = useState(0);

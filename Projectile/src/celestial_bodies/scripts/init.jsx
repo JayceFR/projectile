@@ -42,7 +42,7 @@ export default class Init {
 
     this.clock = new Clock();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.minDistance = 11;
+    // this.controls.minDistance = 9;
     this.controls.maxDistance = 19;
     this.controls.enablePan = false;
     this.controls.enableDamping = true

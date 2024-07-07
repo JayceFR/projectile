@@ -30,12 +30,12 @@ export class Trajectory{
     const vec_pos = new Vector3(pointPosition.x, pointPosition.y, pointPosition.z);
     this.point.position.copy(vec_pos);
     //line
-    var [ppoints, end_pos] = gen_3d_trajectory_points(launch_angle, v0, latitude, vec_pos, pointPosition, GM)
+    var [ppoints, end_pos] = gen_3d_trajectory_points(launch_angle, v0, latitude, vec_pos, pointPosition, GM, radius)
     this.path = new CatmullRomCurve3(ppoints);
     this.lgeometry = new BufferGeometry().setFromPoints(this.path.getPoints(50));
     this.line = new Line(this.lgeometry, this.lmat);
     //Land Lat and Long
-    const [llat, llong] = convert_to_lat_long(end_pos.x, end_pos.y, end_pos.z)
+    const [llat, llong] = convert_to_lat_long(end_pos.x, end_pos.y, end_pos.z, radius)
     return [llat, llong]
   }
 

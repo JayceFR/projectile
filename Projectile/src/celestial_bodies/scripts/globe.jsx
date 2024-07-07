@@ -2,10 +2,10 @@
 import { Group, Mesh, ShaderMaterial, SphereGeometry, TextureLoader, AdditiveBlending, BackSide, MeshBasicMaterial} from "three";
 
 export default class Globe{
-  constructor(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL, colour, strength){
+  constructor(vertexShader, fragmentShader, atmosVertexShader, atmosFragmentShader, mapURL, cloudsURL, colour, strength, radius){
     this.globe = new Group(); 
     this.sphere = new Mesh(
-      new SphereGeometry(5,32,32),
+      new SphereGeometry(radius,32,32),
       new ShaderMaterial({
         vertexShader,
         fragmentShader,
@@ -20,7 +20,7 @@ export default class Globe{
     );
     this.globe.add(this.sphere);
     this.atmosphere = new Mesh(
-      new SphereGeometry(5,32,32),
+      new SphereGeometry(radius,32,32),
       new ShaderMaterial({
         vertexShader: atmosVertexShader,
         fragmentShader: atmosFragmentShader,
@@ -40,7 +40,7 @@ export default class Globe{
     if (cloudsURL){
       this.isclouds = true;
       this.clouds = new Mesh(
-        new SphereGeometry(5, 32, 32),
+        new SphereGeometry(radius, 32, 32),
         new MeshBasicMaterial({
           map: new TextureLoader().load(cloudsURL),
           blending: AdditiveBlending,
