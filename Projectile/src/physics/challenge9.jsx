@@ -44,6 +44,7 @@ function Challenge9(props){
         <Input name={"launch speed"} unit={"ms^-1"} value={vel} change_method={setVel2} type={'float'}/>
         <Input name={"launch height"} unit={"m"} value={height} change_method={setHeight2} type={'float'}/>
         <Input name={"Weight"} unit={"kg"} value={weight} change_method={setWeight2} type={'float'}/>
+        <Input name={"Drag Coefficient"} value={Dc} change_method={setDc2} type={'float'}/>
       
       </div>
       <div className="canvas">
