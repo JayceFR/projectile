@@ -59,7 +59,7 @@ function Challenge8(props){
         
         <!-- adding CofE as an input, need to figure out how to impliment a range of acceptable values-->
           
-        <Input name={"Coefficient of Restitution"} unit={"ratio"} change_method={setCofE2} type={"float"}/>
+        <Input name={"Coefficient of Restitution"} unit={"ratio"} value={CofE} change_method={setCofE2} type={"float"}/>
 
       </div>
       <div className="canvas">
