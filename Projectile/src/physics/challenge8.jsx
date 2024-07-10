@@ -36,7 +36,7 @@ function Challenge8(props){
     generate_points();
   }, [angle, vel, height, g])
 
-  console.log("oints",points)
+  console.log("points",points)
   return (
     <>
       <div className="controls">
