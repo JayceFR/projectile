@@ -6,6 +6,8 @@ import Graph from "../components/graph";
 function Challenge8(props){
   const [angle, setAngle2] = useState(45);
   const [vel, setVel2] = useState(20);
+  // as veloicty is a constant, the speed can not be reversed therefore will be using a placeholder variable vell
+  var vell= vel;
   const [height, setHeight2] = useState(2);
   const [g, setg2] = useState(9.8);
   //defining CofE
@@ -19,22 +21,28 @@ function Challenge8(props){
   const [time_of_flight, setTimeOfFlight] = useState(0);
 
   const [points, setPoints] = useState([]);
-
-  const generate_points = () => {
+//changed const to defined as a function, not sure what = ()=> is but I will not mess with it.
+  function generate_points = () => {
     console.log(typeof(vel))
     let rangle = radians(angle);
-    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g;
-    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
-    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+    const curr_xa = vell * vell * Math.sin(rangle)* Math.cos(rangle) * 1/g;
+    const curr_ya = height + (vell * vell * Math.pow(Math.sin(rangle), 2) / (2 * g));
+    let prange = vell * vell * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
     console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
-    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
+    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vell);
+    setTimeOfFlight(prange/(vell * Math.cos(rangle)));
     setPoints(convert_to_points(ppoints));
     setXa(curr_xa);
     setYa(curr_ya);
     setRange(prange);
   }
-
+ const bounce {
+   call(generate_points);
+   for (let i = 0; i < bounces; i++) {
+     var vell = vell*-1*CofE;
+     call(generate_points);
+   ;
+}}
   useEffect(() => {
     // console.log(typeof(height));
     generate_points();
