@@ -28,7 +28,7 @@ function Challenge8(props){
     const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
     let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
     console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vell);
+    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
     setTimeOfFlight(prange/(vel * Math.cos(rangle)));
     setPoints(convert_to_points(ppoints));
     setXa(curr_xa);
@@ -39,8 +39,7 @@ function Challenge8(props){
    generate_points();
    for (let i = 0; i < bounces; i++) {
      vel = vel*-1*CofE;
-     call(generate_points);
-   ;
+     generate_points();
 }}
   useEffect(() => {
     // console.log(typeof(height));
