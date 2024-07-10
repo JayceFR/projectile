@@ -22,7 +22,7 @@ function Challenge8(props){
 
   const [points, setPoints] = useState([]);
 //changed const to defined as a function, not sure what = ()=> is but I will not mess with it.
-  function generate_points = () => {
+  function generate_points() {
     console.log(typeof(vel))
     let rangle = radians(angle);
     const curr_xa = vell * vell * Math.sin(rangle)* Math.cos(rangle) * 1/g;
