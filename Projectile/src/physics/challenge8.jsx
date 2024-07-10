@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import { convert_to_points, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
-
+//Borrowed code from challenge 2
 function Challenge8(props){
   const [angle, setAngle2] = useState(45);
   const [vel, setVel2] = useState(20);
   const [height, setHeight2] = useState(2);
   const [g, setg2] = useState(9.8);
+  //defining CofE
+  const[CofE,setCofE2]= useState(0.5);
+  //defining number of bounces
+  const bounces= 5;
 
   const [range, setRange] = useState(0);
   const [xa, setXa] = useState(0);
@@ -44,6 +48,11 @@ function Challenge8(props){
         <Input name={"launch speed"} unit={"ms^-1"} value={vel} change_method={setVel2} type={'float'}/>
         <Input name={"launch height"} unit={"m"} value={height} change_method={setHeight2} type={'float'}/>
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setg2} type = {'float'}/>
+        
+        <!-- adding CofE as an input, need to figure out how to impliment a range of acceptable values-->
+          
+        <Input name={"Coefficient of Restitution"} unit={"ratio"} change_method={setCofE2} type={"float"}/>
+
       </div>
       <div className="canvas">
         <div className="graph">
