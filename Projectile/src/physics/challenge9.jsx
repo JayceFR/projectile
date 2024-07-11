@@ -14,49 +14,48 @@ function Challenge9(props){
   const[mass,setMass2]=useState(1);
   const[crossSecA,setCrossSecA2]=useState(1);
   
-  const [range, setRange] = useState(0);
-  const [xa, setXa] = useState(0);
-  const [ya, setYa] = useState(0);
-  const [time_of_flight, setTimeOfFlight] = useState(0);
+  const [time_step, set_time_step] = useState(0.02);
 // generating function for K
   const k= (0.5*Ad*Dc*crossSecA)/mass;
   const [points, setPoints] = useState([]);
   
 // use of a the model without air resistance as comparison
   const generate_points = () => {
-    console.log(typeof(vel))
-    let rangle = radians(angle);
-    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g;
-    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
-    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
-    console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
-    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
-    setPoints(convert_to_points(ppoints));
-    setXa(curr_xa);
-    setYa(curr_ya);
-    setRange(prange);
-  }
+   let time = 0;
+    let y = height + uy(vel, angle) - 0.5 * g * time * time;
+    let x = 0;
+    let ppoints = {x:[], y:[]};
+    while (y > -10){
+      y = height + uy(vel, angle) * time - 0.5 * g * time * time;
+      x = ux(vel, angle) * time;
+      ppoints.x.push(x);
+      ppoints.y.push(y);
+      time += time_step;
+    }
+
+  const [points, setPoints] = useState({});}
+
   const generate_points_Res = () => {
-    console.log(typeof(vel))
-    let rangle = radians(angle);
-    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g +; //add air resistance
-    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));// add air resistance
-    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
-    console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel); // change colour
-    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
-    setPoints(convert_to_points(ppoints));
-    setXa(curr_xa);
-    setYa(curr_ya);
-    setRange(prange);
+    let time = 0;
+    let y = height + uy(vel, angle) - 0.5 * g * time * time;
+    let x = 0;
+    let ppoints = {x:[], y:[]};
+    while (y > -10){
+      y = height + uy(vel, angle) * time - 0.5 * g * time * time;
+      x = ux(vel, angle) * time;
+      ppoints.x.push(x);
+      ppoints.y.push(y);
+      time += time_step;
+    }
+    setPoints(convert_to_points(ppoints))
   }
+
   useEffect(() => {
     // console.log(typeof(height));
     generate_points();
   }, [angle, vel, height, g])
 
-  console.log("oints",points)
+  console.log("points",points)
   return (
     <>
       <div className="controls">
@@ -100,5 +99,24 @@ function Challenge9(props){
     </>
   )
 }
+
+  const [time_step, set_time_step] = useState(0.02);
+
+  const [points, setPoints] = useState({});
+
+  const generate_points = () => {
+    let time = 0;
+    let y = height + uy(vel, angle) - 0.5 * g * time * time;
+    let x = 0;
+    let ppoints = {x:[], y:[]};
+    while (y > -10){
+      y = height + uy(vel, angle) * time - 0.5 * g * time * time;
+      x = ux(vel, angle) * time;
+      ppoints.x.push(x);
+      ppoints.y.push(y);
+      time += time_step;
+    }
+    setPoints(convert_to_points(ppoints))
+  }
 
 export default Challenge9;
