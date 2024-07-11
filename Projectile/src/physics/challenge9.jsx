@@ -15,10 +15,12 @@ function Challenge9(props){
   const[crossSecA,setCrossSecA2]=useState(1);
   
   const [time_step, set_time_step] = useState(0.02);
-// generating function for K
+// generating value for K (with inputs) with associated acceleration equations
   const k= (0.5*Ad*Dc*crossSecA)/mass;
-  const [points, setPoints] = useState([]);
-  
+  const [Ay,setAy2]= useState((uy(vel,angle)/vel)*k*vel*vel);
+  const [Ax,setAx2]= useState((ux(vel,angle)/vel)*k*vel*vel);
+
+	const [points, setPoints] = useState([]);
 // use of a the model without air resistance as comparison
   const generate_points = () => {
    let time = 0;
@@ -28,7 +30,9 @@ function Challenge9(props){
     while (y > -10){
       y = height + uy(vel, angle) * time - 0.5 * g * time * time;
       x = ux(vel, angle) * time;
-      ppoints.x.push(x);
+			setAy2((uy(vel,angle)/vel)*k*vel*vel) //updating Ay
+			setAx2((ux(vel,angle)/vel)*k*vel*vel) //updating Ax
+      ppoints.x.push(x); 
       ppoints.y.push(y);
       time += time_step;
     }
@@ -41,8 +45,9 @@ function Challenge9(props){
     let x = 0;
     let ppoints = {x:[], y:[]};
     while (y > -10){
-      y = height + uy(vel, angle) * time - 0.5 * g * time * time;
-      x = ux(vel, angle) * time;
+      y = height + uy(vel, angle) * time - 0.5 * (g + Ay) * time * time +; //including Ay
+      x = ux(vel, angle) * time - 0.5 * Ax * time * time ; // including Ax
+			
       ppoints.x.push(x);
       ppoints.y.push(y);
       time += time_step;
@@ -62,10 +67,12 @@ function Challenge9(props){
         <Input name={"launch angle"} unit={"deg"} value={angle} change_method={setAngle2} type={'float'}/>
         <Input name={"launch speed"} unit={"ms^-1"} value={vel} change_method={setVel2} type={'float'}/>
         <Input name={"launch height"} unit={"m"} value={height} change_method={setHeight2} type={'float'}/>
+				
         <Input name={"Weight"} unit={"kg"} value={mass} change_method={setMass2} type={'float'}/>
         <Input name={"Drag Coefficient"} value={Dc} change_method={setDc2} type={'float'}/>
         <Input name={"Air Density"} value={Ad} change_method={setAd2} tpye={'float'}/>
         <Input name={"Cross Sectional Area"} value={crossSecA} change_method={setCrossSecA2} type={'float'}/>
+				
       </div>
       <div className="canvas">
         <div className="graph">
