@@ -8,13 +8,20 @@ function Challenge9(props){
   const [vel, setVel2] = useState(20);
   const [height, setHeight2] = useState(2);
   const [g, setg2] = useState(9.8);
-
+  //extra inputs
+  const [Dc,setDc2]=useState(0.47);
+  const [Ad,setAd2]=useState(1);
+  const[mass,setMass2]=useState(1);
+  const[crossSecA,setCrossSecA2]=useState(1);
+  
   const [range, setRange] = useState(0);
   const [xa, setXa] = useState(0);
   const [ya, setYa] = useState(0);
   const [time_of_flight, setTimeOfFlight] = useState(0);
-
+// generating function for K
+  const k= (0.5*Ad*Dc*crossSecA)/mass;
   const [points, setPoints] = useState([]);
+  
 // use of a the model without air resistance as comparison
   const generate_points = () => {
     console.log(typeof(vel))
@@ -30,7 +37,20 @@ function Challenge9(props){
     setYa(curr_ya);
     setRange(prange);
   }
-
+  const generate_points_Res = () => {
+    console.log(typeof(vel))
+    let rangle = radians(angle);
+    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g +; //add air resistance
+    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));// add air resistance
+    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+    console.log("range", prange);
+    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel); // change colour
+    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
+    setPoints(convert_to_points(ppoints));
+    setXa(curr_xa);
+    setYa(curr_ya);
+    setRange(prange);
+  }
   useEffect(() => {
     // console.log(typeof(height));
     generate_points();
@@ -43,9 +63,10 @@ function Challenge9(props){
         <Input name={"launch angle"} unit={"deg"} value={angle} change_method={setAngle2} type={'float'}/>
         <Input name={"launch speed"} unit={"ms^-1"} value={vel} change_method={setVel2} type={'float'}/>
         <Input name={"launch height"} unit={"m"} value={height} change_method={setHeight2} type={'float'}/>
-        <Input name={"Weight"} unit={"kg"} value={weight} change_method={setWeight2} type={'float'}/>
+        <Input name={"Weight"} unit={"kg"} value={mass} change_method={setMass2} type={'float'}/>
         <Input name={"Drag Coefficient"} value={Dc} change_method={setDc2} type={'float'}/>
-      
+        <Input name={"Air Density"} value={Ad} change_method={setAd2} tpye={'float'}/>
+        <Input name={"Cross Sectional Area"} value={crossSecA} change_method={setCrossSecA2} type={'float'}/>
       </div>
       <div className="canvas">
         <div className="graph">
