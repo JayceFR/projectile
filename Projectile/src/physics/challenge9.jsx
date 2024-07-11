@@ -3,6 +3,9 @@ import { convert_to_points, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 
+//const [colors, setColors] = useState(["(63,72,204)", "(34, 177, 76)", "(237, 28, 36)"])
+//const [Model, setModel] = useState(["Air Resistance Model","No-air Resistance Model"]);
+
 function Challenge9(props){
   const [angle, setAngle2] = useState(45);
   const [vel, setVel2] = useState(20);
@@ -59,7 +62,12 @@ function Challenge9(props){
     // console.log(typeof(height));
     generate_points();
   }, [angle, vel, height, g])
-
+//gen_dataset.push({
+//        label: "θ = " + angles[index].toString(),
+//        data: convert_to_points(ppoints),
+//       borderColor: "rgb"+colors[index],
+//       pointBackgroundColor: "rgb"+colors[index],  
+//       pointRadius: 0,
   console.log("points",points)
   return (
     <>
@@ -80,14 +88,7 @@ function Challenge9(props){
             xtext = {"x/m"} 
             ytext = {"y/m"} 
             dataset = {[
-              {
-                label: "Apogee",
-                data: [{x:xa, y:ya}],
-                pointRadius: 7,
-                borderColor: "rgb(255,0,0)",
-                pointBackgroundColor: "rgb(255,0,0)",
-                pointStyle: 'rectRot'
-              },
+            
               {
                 label: "Comparing models with/without Air Resistance",
                 data: points,
