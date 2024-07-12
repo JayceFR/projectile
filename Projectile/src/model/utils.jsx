@@ -46,8 +46,12 @@ function delta(x){
     rdx.push(x[pos+1] - x[pos])
     pos += 1
   }
-  return rdx
+  return rdx;
 }
 
-export {ux, uy, radians, convert_to_points, gen_points, discriminant, range, delta}
+function calcK(cd, rho, area, m){
+  return 0.5 * cd * rho * area / m;
+}
+
+export {ux, uy, radians, convert_to_points, gen_points, discriminant, range, delta, calcK}
 

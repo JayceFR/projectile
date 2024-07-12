@@ -156,5 +156,63 @@ const gen_3d_trajectory_points = (launch_angle, v0, latitude, vec_pos, pointPosi
   return [ppoints, end_pos];
 }
 
-export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d, gen_3d_trajectory_points}
+function no_drag_verlet(px, py, vx, vy, ax, ay){
+  var return_points = {x :[], y: [], time: [], velocity: []}
+  var acceleration = [ax, ay];
+  var position = [px, py];
+  var veloctiy = [vx, vy]
+  var t = 0;
+  var dt = 0.01;
+  while (position[1] >= 0){
+    //add the point to the graph
+    console.log("inside the while loop")
+    return_points.x.push(position[0])
+    return_points.y.push(position[1])  
+    return_points.time.push(t)
+    //update postion
+    position[0] += veloctiy[0] * dt + 0.5 * acceleration[0] * dt * dt;
+    position[1] += veloctiy[1] * dt + 0.5 * acceleration[1] * dt * dt;
+    //update velocity
+    veloctiy[0] += acceleration[0] * dt;
+    veloctiy[1] += acceleration[1] * dt;
+    //update time
+    t = t + dt;
+  } 
+  return_points.x.push(position[0])
+  return_points.y.push(position[1])
+  return_points.velocity.push(veloctiy[0], veloctiy[1]);
+  return return_points;
+}
+
+function drag_verlet(px, py, vx, vy, k, g){
+  var return_points = {x :[], y: []}
+  var acceleration = [0,0]
+  var position = [px, py];
+  var veloctiy = [vx, vy]
+  var v = Math.sqrt(vx * vx + vy * vy)
+  var t = 0;
+  var dt = 0.05;
+  while (position[1] >= 0){
+    //add the point to the graph
+    return_points.x.push(position[0])
+    return_points.y.push(position[1])  
+    //update acceleration
+    acceleration[0] = -veloctiy[0] * k * v;
+    acceleration[1] = -g - veloctiy[1] * k * v;
+    //update postion
+    position[0] += veloctiy[0] * dt + 0.5 * acceleration[0] * dt * dt;
+    position[1] += veloctiy[1] * dt + 0.5 * acceleration[1] * dt * dt;
+    //update velocity
+    veloctiy[0] += acceleration[0] * dt;
+    veloctiy[1] += acceleration[1] * dt;
+    v = Math.sqrt(veloctiy[0] * veloctiy[0] + veloctiy[1] * veloctiy[1]);
+    //update time
+    t = t + dt;
+  } 
+  return_points.x.push(position[0]);
+  return_points.y.push(position[1]);
+  return return_points;
+}
+
+export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d, gen_3d_trajectory_points, no_drag_verlet, drag_verlet}
 
