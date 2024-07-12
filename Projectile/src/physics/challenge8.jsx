@@ -1,46 +1,85 @@
 import { useState, useEffect } from "react";
-import { convert_to_points, gen_points, radians } from "../model/utils";
+import { convert_to_points, gen_points, radians, ux, uy } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
+import { Vector2 } from "three";
 //Borrowed code from challenge 2
 function Challenge8(props){
   const [angle, setAngle2] = useState(45);
   const [vel, setVel2] = useState(20);
-  // as veloicty is a constant, the speed can not be reversed therefore will be using a placeholder variable vell
+
   const [height, setHeight2] = useState(2);
   const [g, setg2] = useState(9.8);
-  //defining CofE
-  const[CofR,setCofR2]= useState(0.5);
-  //defining number of bounces
+
+  const [CofE,setCofE]= useState(0.5);
   const bounces= 5;
 
-  const [range, setRange] = useState(0);
-  const [xa, setXa] = useState(0);
-  const [ya, setYa] = useState(0);
-  const [time_of_flight, setTimeOfFlight] = useState(0);
-
   const [points, setPoints] = useState([]);
-//changed const to defined as a function, not sure what = ()=> is but I will not mess with it.
-  function generate_points() {
-    console.log(typeof(vel))
-    let rangle = radians(angle);
-    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g;
-    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
-    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
-    console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
-    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
-    setPoints(convert_to_points(ppoints));
-    setXa(curr_xa);
-    setYa(curr_ya);
-    setRange(prange);
+
+  // function generate_points() {
+  //   let rangle = radians(angle);
+  //   var all_points = {x: [], y: []}
+  //   for (let x = 0; x < bounces; x++){
+  //     let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+  //     var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
+  //     all_points.x.concat(ppoints.x)
+  //     all_points.y.concat(ppoints.y)
+      
+  //   }
+  //   setTimeOfFlight(prange/(vel * Math.cos(rangle)));
+  //   setPoints(convert_to_points(ppoints));
+  // }
+
+  function generate_points(){
+    var vx = ux(vel, angle);
+    var vy = uy(vel, angle);
+    var px = 0;
+    var py = height;
+    var all_points = {x: [], y: []}
+    for (let x = 0; x < bounces; x++){
+      var dict = verlet(px, py, vx, vy);
+      console.log("Inside gen_points for loop", dict)
+      //append to all points
+      all_points.x = all_points.x.concat(dict.x);
+      all_points.y = all_points.y.concat(dict.y);
+      //update the values
+      px = dict.x[dict.x.length - 1];
+      py = dict.y[dict.y.length - 1];
+      vx = dict.velocity[0];
+      vy = dict.velocity[1] * - CofE;
+    }
+    console.log(all_points);
+    setPoints(convert_to_points(all_points));
   }
- const bounce = () => {
-   generate_points();
-   for (let i = 0; i < bounces; i++) {
-     vel = vel*-1*CofE;
-     generate_points();
-}}
+
+  function verlet(px, py, vx, vy){
+    var return_points = {x :[], y: [], time: [], velocity: []}
+    var acceleration = [0, -g];
+    var position = [px, py];
+    var veloctiy = [vx, vy]
+    var t = 0;
+    var dt = 0.1;
+    while (position[1] >= 0){
+      //add the point to the graph
+      console.log("inside the while loop")
+      return_points.x.push(position[0])
+      return_points.y.push(position[1])  
+      return_points.time.push(t)
+      //update postion
+      position[0] += veloctiy[0] * dt + 0.5 * acceleration[0] * dt * dt;
+      position[1] += veloctiy[1] * dt + 0.5 * acceleration[1] * dt * dt;
+      //update velocity
+      veloctiy[0] += acceleration[0] * dt;
+      veloctiy[1] += acceleration[1] * dt;
+      //update time
+      t = t + dt;
+    } 
+    return_points.x.push(position[0])
+    return_points.y.push(0)
+    return_points.velocity.push(veloctiy[0], veloctiy[1]);
+    return return_points;
+  }
+
   useEffect(() => {
     // console.log(typeof(height));
     generate_points();
@@ -57,7 +96,7 @@ function Challenge8(props){
         
         {/* adding CofE as an input, need to figure out how to impliment a range of acceptable values */}
           
-        <Input name={"Coefficient of Restitution"} unit={"ratio"} value={CofR} change_method={setCofR2} type={"float"}/>
+        <Input name={"Coefficient of Restitution"} unit={"ratio"} value={CofE} change_method={setCofE} type={"float"}/>
 
       </div>
       <div className="canvas">
@@ -67,14 +106,6 @@ function Challenge8(props){
             ytext = {"y/m"} 
             dataset = {[
               {
-                label: "Apogee",
-                data: [{x:xa, y:ya}],
-                pointRadius: 7,
-                borderColor: "rgb(255,0,0)",
-                pointBackgroundColor: "rgb(255,0,0)",
-                pointStyle: 'rectRot'
-              },
-              {
                 label: "No Air Resistance",
                 data: points,
                 borderColor: "rgb(75,192,192)",
@@ -82,11 +113,6 @@ function Challenge8(props){
               },
             ]}
             />
-          <div className="output">
-            <p>Range  : {range.toPrecision(4)}m</p>
-            <p>Apogee : ({xa.toPrecision(3)}, {ya.toPrecision(3)})</p>
-            <p>Time of Flight: {time_of_flight.toPrecision(3)}s</p>
-          </div>
         </div>
       </div>
     </>
