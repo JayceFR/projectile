@@ -23,6 +23,7 @@ function Challenge9(props){
   const [Ay,setAy2]= useState((uy(vel,angle)/vel)*k*vel*vel);
   const [Ax,setAx2]= useState((ux(vel,angle)/vel)*k*vel*vel);
 
+
 	const [points, setPoints] = useState([]);
 // use of a the model without air resistance as comparison
   const generate_points = () => {
@@ -48,7 +49,7 @@ function Challenge9(props){
     let x = 0;
     let ppoints = {x:[], y:[]};
     while (y > -10){
-      y = height + uy(vel, angle) * time - 0.5 * (g + Ay) * time * time +; //including Ay
+      y = height + uy(vel, angle) * time - 0.5 * (g + Ay) * time * time; //including Ay
       x = ux(vel, angle) * time - 0.5 * Ax * time * time ; // including Ax
 			
       ppoints.x.push(x);
@@ -108,9 +109,7 @@ function Challenge9(props){
   )
 }
 
-  const [time_step, set_time_step] = useState(0.02);
-
-  const [points, setPoints] = useState({});
+  
 
   const generate_points = () => {
     let time = 0;
