@@ -1,7 +1,22 @@
 import { Vector3 } from "three";
-import { convert_to_points, discriminant, gen_points, radians, range } from "./utils";
+import { convert_to_points, discriminant, gen_points, radians, range, ux, uy } from "./utils";
 import { createCycloid } from "../celestial_bodies/scripts/utils";
 
+//function to generate points upto a given y value
+function gen_points_upto(final_y, vel, angle, time_step, height, g){
+  let time = 0;
+  let y = height + uy(vel, angle) - 0.5 * g * time * time;
+  let x = 0;
+  let ppoints = {x:[], y:[]};
+  while (y > final_y){
+    y = height + uy(vel, angle) * time - 0.5 * g * time * time;
+    x = ux(vel, angle) * time;
+    ppoints.x.push(x);
+    ppoints.y.push(y);
+    time += time_step;
+  }
+  return ppoints;
+}
 
 function minu(g, target_y, target_x, num_of_points, finish){
   const minvel = Math.pow(g, 0.5) * Math.pow(target_y + Math.pow(target_x * target_x + target_y * target_y, 0.5), 0.5);
@@ -214,5 +229,18 @@ function drag_verlet(px, py, vx, vy, k, g){
   return return_points;
 }
 
-export {minu, low_ball, high_ball, max_r, bounding_parabola, distance_travelled_i, distance_travelled, gen_points_3d, gen_3d_trajectory_points, no_drag_verlet, drag_verlet}
+export {
+  minu, 
+  low_ball, 
+  high_ball, 
+  max_r, 
+  bounding_parabola, 
+  distance_travelled_i, 
+  distance_travelled, 
+  gen_points_3d, 
+  gen_3d_trajectory_points, 
+  no_drag_verlet, 
+  drag_verlet, 
+  gen_points_upto
+}
 

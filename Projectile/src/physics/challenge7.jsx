@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { convert_to_points, gen_points, radians } from "../model/utils";
+import { convert_to_points, gen_points, radians, ux, uy } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
+import { gen_points_upto } from "../model/projectile";
 
 function Challenge7(){
   const [angles, setAngles] = useState([30, 45, 60, 70.5, 78, 85]);
@@ -10,8 +11,36 @@ function Challenge7(){
 
   const [colors, setColors] = useState(["(63,72,204)", "(34, 177, 76)", "(237, 28, 36)", "(153, 217, 234)", "(163, 73, 164)", "(255, 201, 14)"])
   const [points, setPoints] = useState([]);
+  const [options, setOptions] = useState({
+    scales: {
+      x: {
+        type: 'linear',
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "x/m",
+          font:{
+            size: 24
+          }
+        }
+      },
+      y:{
+        type: 'linear',
+        beginAtZero: false,
+        min: -5,
+        title: {
+          display: true,
+          text: "y/m",
+          font:{
+            size: 24
+          }
+        }
+      }
+    }
+  })
 
   const [dataset, setDataSet] = useState([]);
+  const [trajectory_dataset, setTrajDataset] = useState([]);
 
   const generate_points = () => {
     const max_min_t = (u, g, theta) => {
@@ -29,10 +58,12 @@ function Challenge7(){
       }
       return return_points;
     } 
-    let gen_dataset = [];
+    let gen_dataset = []; //The derivative graph
+    let trajectory_dataset = []; // The trajectory graph
     for (let index = 0; index < angles.length; index ++){
       const curr_rangle = radians(angles[index]);
       let ppoints = {x: [], y:[]}
+      //generation for the drivative graph
       for (let t = 0; t < 50; t++){
         var curr_t = 0 + t * 2.5/50;
         ppoints.x.push(curr_t)
@@ -59,10 +90,29 @@ function Challenge7(){
           borderColor: pcolor,
           pointStyle: 'star'
         });
+        trajectory_dataset.push({
+          data: [{x: ux(vel, angles[index]) * curr_t, y: uy(vel, angles[index]) * curr_t - 0.5 * g * curr_t * curr_t }],
+          pointRadius: 10,
+          pointBackgroundColor: pcolor,
+          borderColor: pcolor,
+          pointStyle: 'star'
+        })
       }
+      //generate points for the trajectory
+      let tpoints = gen_points_upto(-10, vel, angles[index], 0.1, 0, g);
+      trajectory_dataset.push({
+        label: "θ = " + angles[index].toString(),
+        data: convert_to_points(tpoints),
+        borderColor: "rgb"+colors[index],
+        pointBackgroundColor: "rgb"+colors[index],  
+        pointRadius: 0,
+      })
     }
     setDataSet(gen_dataset);
+    setTrajDataset(trajectory_dataset);
     console.log(gen_dataset);
+    //The trajectory
+
   }
   useEffect(() => {
     generate_points();
@@ -77,10 +127,17 @@ function Challenge7(){
       <div className="canvas">
         <div className="graph">
           <Graph 
-            xtext = {"x/m"} 
-            ytext = {"y/m"} 
+            xtext = {"t/s"} 
+            ytext = {"range/m"} 
             dataset = {dataset}
             />
+          <Graph 
+            options={options}
+            dataset = {trajectory_dataset}
+            />
+          <br></br>
+          <br></br>
+          <br></br>
         </div>
       </div>
     </>

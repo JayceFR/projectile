@@ -4,7 +4,7 @@ import { Chart as ChartJS, LinearScale, PointElement, LineElement, Title, Toolti
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 function Graph(props){
-  const options = {
+  var options = {
     scales: {
       x: {
         type: 'linear',
@@ -30,6 +30,9 @@ function Graph(props){
         }
       }
     }
+  }
+  if (props.options){
+    options = props.options;
   }
   const lineChartData = {
     datasets: props.dataset,
