@@ -4,6 +4,7 @@ import { Chart as ChartJS, LinearScale, PointElement, LineElement, Title, Toolti
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 function Graph(props){
+  
   var options = {
     scales: {
       x: {
@@ -31,6 +32,38 @@ function Graph(props){
       }
     }
   }
+
+  if (props.animation){
+    options = {
+      animation: props.animation,
+      scales: {
+        x: {
+          type: 'linear',
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: props.xtext,
+            font:{
+              size: 24
+            }
+          }
+        },
+        y:{
+          type: 'linear',
+          beginAtZero: true,
+          min: 0,
+          title: {
+            display: true,
+            text: props.ytext,
+            font:{
+              size: 24
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (props.options){
     options = props.options;
   }

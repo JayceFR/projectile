@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { convert_to_points, gen_points, radians, range, ux, uy } from "../model/utils";
+import { convert_to_points, gen_animation, gen_points, radians, range, ux, uy } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 import { no_drag_verlet } from "../model/projectile";
@@ -15,6 +15,8 @@ function Challenge8(props){
   const bounces= 5;
 
   const [points, setPoints] = useState([]);
+
+  const [animation, setAnimation] = useState(gen_animation(points.length))
 
   function generate_points(){
     var vx = ux(vel, angle);
@@ -33,8 +35,12 @@ function Challenge8(props){
       vx = dict.velocity[0];
       vy = dict.velocity[1] * - CofE;
     }
-    setPoints(convert_to_points(all_points));
+    var ppoints = convert_to_points(all_points)
+    setAnimation(gen_animation(ppoints.length))
+    setPoints(ppoints);
   }
+
+  
 
   
 
@@ -62,6 +68,7 @@ function Challenge8(props){
           <Graph 
             xtext = {"x/m"} 
             ytext = {"y/m"} 
+            animation = {animation}
             dataset = {[
               {
                 label: "No Air Resistance",
