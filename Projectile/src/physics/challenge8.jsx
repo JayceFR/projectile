@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { convert_to_points, gen_points, radians, range, ux, uy } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
-import { Vector2 } from "three";
 import { no_drag_verlet } from "../model/projectile";
 //Borrowed code from challenge 2
 function Challenge8(props){
