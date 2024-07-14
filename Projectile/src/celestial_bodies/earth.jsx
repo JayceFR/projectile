@@ -11,6 +11,7 @@ import Globe from "./scripts/globe"
 import Input from "../components/input"
 import { Trajectory } from "./scripts/trajectory"
 import { Vector2, Vector3 } from "three"
+import { useNavigate } from "react-router-dom"
 
 function Earth(props){
 
@@ -28,10 +29,12 @@ function Earth(props){
   const [long_land, setLongLand] = useState(0);
 
   const [GM, setGM] = useState(1);
+  const [display, setDisplay] = useState(new Init('mycanvas', 'econtroller'));
+  const navigate = useNavigate()
 
   useEffect(()=>{
 
-    const display = new Init('mycanvas', "econtroller");
+    // const display = new Init('mycanvas', "econtroller");
     display.initialize()
 
     // group.rotation.z = -23.4 * Math.PI / 180;
@@ -53,8 +56,7 @@ function Earth(props){
     animate();
 
     return () => {
-      display.scene.clear()
-      display.scene.removeFromParent()
+      display.dispose();
     }
 
   }, [])

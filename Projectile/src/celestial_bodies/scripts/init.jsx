@@ -53,6 +53,11 @@ export default class Init {
     window.addEventListener('resize', () => this.onWindowResize(), false);
   }
 
+  dispose(){
+    this.renderer.dispose();
+    this.scene.removeFromParent();
+  }
+
   onWindowResize() {
     this.camera.aspect = (window.innerWidth * 0.75) / (window.innerHeight);
     this.camera.updateProjectionMatrix();

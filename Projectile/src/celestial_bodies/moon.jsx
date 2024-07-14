@@ -52,8 +52,7 @@ function Moon(props){
     animate();
 
     return () => {
-      display.scene.clear()
-      display.scene.removeFromParent()
+      display.dispose();
     }
 
   }, [])
