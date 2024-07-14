@@ -53,6 +53,9 @@ function Moon(props){
 
     return () => {
       display.dispose();
+      display.controls.dispose();
+      display.scene.remove(globe.globe);
+      display.scene.remove(trajectory.point)
     }
 
   }, [])

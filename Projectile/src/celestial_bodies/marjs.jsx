@@ -54,6 +54,9 @@ function Mars(props){
 
     return () => {
       display.dispose();
+      display.scene.remove(globe.globe);
+      display.scene.remove(trajectory.point);
+      globe.sphere.remove(trajectory.line);
     }
 
   }, [])

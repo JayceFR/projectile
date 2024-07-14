@@ -57,6 +57,8 @@ function Earth(props){
 
     return () => {
       display.dispose();
+      display.scene.remove(globe.globe);
+      display.scene.remove(trajectory.point)
     }
 
   }, [])
