@@ -173,6 +173,214 @@ function convert_to_points(points){
   }
   return s
 }`]
+  },
+  {
+    "explanation": "This challenge consists of two different graphs, the trajectory graph and the derivative graph. The different angles are stored in an array. A count controlled loop is used to iterate through the array computing trajectory points and derivative points for each angle. The max_min_t function provides a list of time values where a maxima or minima occurs. Finally we iterate through the maxima and minima times and assign colours respectively.",
+    "code": [`const generate_points = () => {
+  const max_min_t = (u, g, theta) => {
+    const b = Math.pow(Math.sin(theta), 2) - 8/9 ;
+    const return_points = []
+    if (b >= 0){
+      const max_t = 3 * u * (Math.sin(theta) + Math.pow(b, 0.5)) / (2 * g);
+      const min_t = 3 * u * (Math.sin(theta) - Math.pow(b, 0.5)) / (2 * g);
+      if (max_t <= 2.5 && max_t >= 0){
+        return_points.push([max_t, "max"]);
+      }
+      if (min_t <= 2.5 && min_t >= 0){
+        return_points.push([min_t, "min"]);
+      }
+    }
+    return return_points;
+  } 
+  let gen_dataset = []; //The derivative graph
+  let trajectory_dataset = []; // The trajectory graph
+  for (let index = 0; index < angles.length; index ++){
+    const curr_rangle = radians(angles[index]);
+    let ppoints = {x: [], y:[]}
+    //generation for the drivative graph
+    for (let t = 0; t < 50; t++){
+      var curr_t = 0 + t * 2.5/50;
+      ppoints.x.push(curr_t)
+      ppoints.y.push(Math.sqrt(vel * vel * curr_t * curr_t - g * Math.pow(curr_t, 3) * vel * Math.sin(curr_rangle) + Math.pow(g,2) * Math.pow(curr_t, 4) / 4))
+    }
+    gen_dataset.push({
+      label: "θ = " + angles[index].toString(),
+      data: convert_to_points(ppoints),
+      borderColor: "rgb"+colors[index],
+      pointBackgroundColor: "rgb"+colors[index],  
+      pointRadius: 0,
+    });
+    const max_min_time_vals = max_min_t(vel, g, curr_rangle);
+    for (let pos = 0; pos < max_min_time_vals.length; pos ++){
+      var curr_t = max_min_time_vals[pos][0];
+      var pcolor = "rgb(0,0,0)"
+      if (max_min_time_vals[pos][1] == "max"){
+        pcolor = "rgb(255, 0, 0)"
+      }
+      gen_dataset.push({
+        data: [{x: curr_t, y: Math.sqrt(vel * vel * curr_t * curr_t - g * Math.pow(curr_t, 3) * vel * Math.sin(curr_rangle) + Math.pow(g,2) * Math.pow(curr_t, 4) / 4) }],
+        pointRadius: 10,
+        pointBackgroundColor: pcolor,
+        borderColor: pcolor,
+        pointStyle: 'star'
+      });
+      trajectory_dataset.push({
+        data: [{x: ux(vel, angles[index]) * curr_t, y: uy(vel, angles[index]) * curr_t - 0.5 * g * curr_t * curr_t }],
+        pointRadius: 10,
+        pointBackgroundColor: pcolor,
+        borderColor: pcolor,
+        pointStyle: 'star'
+      })
+    }
+    //generate points for the trajectory
+    let tpoints = gen_points_upto(-10, vel, angles[index], 0.1, 0, g);
+    trajectory_dataset.push({
+      label: "θ = " + angles[index].toString(),
+      data: convert_to_points(tpoints),
+      borderColor: "rgb"+colors[index],
+      pointBackgroundColor: "rgb"+colors[index],  
+      pointRadius: 0,
+    })
+  }
+  setDataSet(gen_dataset);
+  setTrajDataset(trajectory_dataset);
+  console.log(gen_dataset);
+  //The trajectory
+
+}`]
+  },
+  {
+    "explanation": "This projectile trajectory was implemented using the verlet method. A count controlled loop is used to keep track of the bounces. For each boune the points are computed using the no drag verlet method. Seperate two dimensional arrays are used to store the position, velocity and the acceleraton of the particle. A coditional loop is used to update the particle's postion and velocity if it has not reached the floor yet. Finally each of these points are pushed to a list and are animated in the screen.",
+    "code": [`function generate_points(){
+  var vx = ux(vel, angle);
+  var vy = uy(vel, angle);
+  var px = 0;
+  var py = height;
+  var all_points = {x: [], y: []}
+  for (let x = 0; x < bounces; x++){
+    var dict = no_drag_verlet(px, py, vx, vy, 0, -g);
+    //append to all points
+    all_points.x = all_points.x.concat(dict.x);
+    all_points.y = all_points.y.concat(dict.y);
+    //update the values
+    px = dict.x[dict.x.length - 2];
+    py = dict.y[dict.y.length - 2];
+    vx = dict.velocity[0];
+    vy = dict.velocity[1] * - CofE;
+  }
+  var ppoints = convert_to_points(all_points)
+  setAnimation(gen_animation(ppoints.length))
+  setPoints(ppoints);
+}`, `function no_drag_verlet(px, py, vx, vy, ax, ay){
+  var return_points = {x :[], y: [], time: [], velocity: []}
+  var acceleration = [ax, ay];
+  var position = [px, py];
+  var veloctiy = [vx, vy]
+  var t = 0;
+  var dt = 0.01;
+  while (position[1] >= 0){
+    //add the point to the graph
+    console.log("inside the while loop")
+    return_points.x.push(position[0])
+    return_points.y.push(position[1])  
+    return_points.time.push(t)
+    //update postion
+    position[0] += veloctiy[0] * dt + 0.5 * acceleration[0] * dt * dt;
+    position[1] += veloctiy[1] * dt + 0.5 * acceleration[1] * dt * dt;
+    //update velocity
+    veloctiy[0] += acceleration[0] * dt;
+    veloctiy[1] += acceleration[1] * dt;
+    //update time
+    t = t + dt;
+  } 
+  return_points.x.push(position[0])
+  return_points.y.push(position[1])
+  return_points.velocity.push(veloctiy[0], veloctiy[1]);
+  return return_points;
+}`, `function gen_animation(plength){
+  const totalDuration = 10000;
+  const delayBetweenPoints = totalDuration / plength;
+  const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+  const animation = {
+    x: {
+      type: 'number',
+      easing: 'linear',
+      duration: delayBetweenPoints,
+      from: NaN, // the point is initially skipped
+      delay(ctx) {
+        if (ctx.type !== 'data' || ctx.xStarted) {
+          return 0;
+        }
+        ctx.xStarted = true;
+        return ctx.index * delayBetweenPoints;
+      }
+    },
+    y: {
+      type: 'number',
+      easing: 'linear',
+      duration: delayBetweenPoints,
+      from: previousY,
+      delay(ctx) {
+        if (ctx.type !== 'data' || ctx.yStarted) {
+          return 0;
+        }
+        ctx.yStarted = true;
+        return ctx.index * delayBetweenPoints;
+      }
+    }
+  }
+  return animation;
+}`]
+  },
+  {
+    "explanation": ["This challenge builds up on the previous one. The function no_drag_verlet is called to generate the points of the drag ignored trajectory. Drag Verlet function is called to compute the points of the trajectory of the projectile with the drag. It is similar to that of the no drag verlet but the acceleration is also updated in each iteration based on the air resistance factor which is computerd using the calcK function."],
+    "code": [`function generate_points(){
+  var vx = ux(vel, angle);
+  var vy = uy(vel, angle);
+  var px = 0;
+  var py = height;
+  //no drag curve
+  var no_drag_points = {x: [], y: []}
+  var dict = no_drag_verlet(px, py, vx, vy, 0, -g);
+  no_drag_points.x = no_drag_points.x.concat(dict.x);
+  no_drag_points.y = no_drag_points.y.concat(dict.y);
+  setPoints(convert_to_points(no_drag_points));
+  //drag curve
+  const curr_k = calcK(drag, density, area, mass);
+  var drag_dict = drag_verlet(px, py, vx, vy, curr_k, g);
+  setDragPoints(convert_to_points(drag_dict));
+  setK(curr_k);
+}`, `function drag_verlet(px, py, vx, vy, k, g){
+  var return_points = {x :[], y: []}
+  var acceleration = [0,0]
+  var position = [px, py];
+  var veloctiy = [vx, vy]
+  var v = Math.sqrt(vx * vx + vy * vy)
+  var t = 0;
+  var dt = 0.05;
+  while (position[1] >= 0){
+    //add the point to the graph
+    return_points.x.push(position[0])
+    return_points.y.push(position[1])  
+    //update acceleration
+    acceleration[0] = -veloctiy[0] * k * v;
+    acceleration[1] = -g - veloctiy[1] * k * v;
+    //update postion
+    position[0] += veloctiy[0] * dt + 0.5 * acceleration[0] * dt * dt;
+    position[1] += veloctiy[1] * dt + 0.5 * acceleration[1] * dt * dt;
+    //update velocity
+    veloctiy[0] += acceleration[0] * dt;
+    veloctiy[1] += acceleration[1] * dt;
+    v = Math.sqrt(veloctiy[0] * veloctiy[0] + veloctiy[1] * veloctiy[1]);
+    //update time
+    t = t + dt;
+  } 
+  return_points.x.push(position[0]);
+  return_points.y.push(position[1]);
+  return return_points;
+}`, `function calcK(cd, rho, area, m){
+  return 0.5 * cd * rho * area / m;
+}`]
   }
 
 ]

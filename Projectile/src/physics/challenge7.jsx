@@ -3,6 +3,7 @@ import { convert_to_points, gen_points, radians, ux, uy } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 import { gen_points_upto } from "../model/projectile";
+import Popup from "../components/popup";
 
 function Challenge7(){
   const [angles, setAngles] = useState([30, 45, 60, 70.5, 78, 85]);
@@ -11,6 +12,12 @@ function Challenge7(){
 
   const [colors, setColors] = useState(["(63,72,204)", "(34, 177, 76)", "(237, 28, 36)", "(153, 217, 234)", "(163, 73, 164)", "(255, 201, 14)"])
   const [points, setPoints] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
+  }
+  
   const [options, setOptions] = useState({
     scales: {
       x: {
@@ -125,6 +132,7 @@ function Challenge7(){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setG} type = {'float'}/>
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"t/s"} 
@@ -140,6 +148,7 @@ function Challenge7(){
           <br></br>
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {6}/>}
     </>
   )
 }

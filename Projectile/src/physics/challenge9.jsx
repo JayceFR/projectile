@@ -4,6 +4,7 @@ import Input from "../components/input";
 import Graph from "../components/graph";
 import { Vector2 } from "three";
 import { drag_verlet, no_drag_verlet } from "../model/projectile";
+import Popup from "../components/popup";
 //Borrowed code from challenge 2
 function Challenge9(props){
   const [angle, setAngle2] = useState(45);
@@ -21,6 +22,11 @@ function Challenge9(props){
 
   const [points, setPoints] = useState([]);
   const [drag_points, setDragPoints] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
+  }
 
   
   function generate_points(){
@@ -66,6 +72,7 @@ function Challenge9(props){
 
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -87,6 +94,7 @@ function Challenge9(props){
             />
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {8}/>}
     </>
   )
 }

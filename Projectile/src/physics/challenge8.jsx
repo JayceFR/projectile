@@ -3,6 +3,7 @@ import { convert_to_points, gen_animation, gen_points, radians, range, ux, uy } 
 import Input from "../components/input";
 import Graph from "../components/graph";
 import { no_drag_verlet } from "../model/projectile";
+import Popup from "../components/popup";
 //Borrowed code from challenge 2
 function Challenge8(props){
   const [angle, setAngle2] = useState(45);
@@ -17,6 +18,11 @@ function Challenge8(props){
   const [points, setPoints] = useState([]);
 
   const [animation, setAnimation] = useState(gen_animation(points.length))
+
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
+  }
 
   function generate_points(){
     var vx = ux(vel, angle);
@@ -64,6 +70,7 @@ function Challenge8(props){
 
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -80,6 +87,8 @@ function Challenge8(props){
             />
         </div>
       </div>
+      
+      {show && <Popup del={del_popup} index = {7}/>}
     </>
   )
 }
