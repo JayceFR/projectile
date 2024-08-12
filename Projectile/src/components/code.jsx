@@ -1,7 +1,7 @@
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 function Code(props){
-  const codeString = '(num) => num + 1 ';
+  const codeString = props.code;
   return (
     <SyntaxHighlighter language="jsx" style={atomDark}>
       {codeString}

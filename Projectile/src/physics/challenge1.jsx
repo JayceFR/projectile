@@ -15,7 +15,6 @@ function Challenge1(props){
 
   const [points, setPoints] = useState({});
 
-  const code_string = '(num) => num + 1';
 
   const generate_points = () => {
     let time = 0;
@@ -67,7 +66,7 @@ function Challenge1(props){
             />
         </div>
       </div>
-      {show && <Popup del={del_popup}/>}
+      {show && <Popup del={del_popup} index = {0}/>}
     </>
   )
 
