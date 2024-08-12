@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { convert_to_points, ux, uy } from "../model/utils";
 import Graph from "../components/graph";
 import Input from "../components/input";
+import Popup from "../components/popup";
 
 function Challenge1(props){
   const [angle, setAngle] = useState(45);
@@ -10,7 +11,11 @@ function Challenge1(props){
   const [g, setg] = useState(9.8);
   const [time_step, set_time_step] = useState(0.02);
 
+  const [show, setShow] = useState(false);
+
   const [points, setPoints] = useState({});
+
+  const code_string = '(num) => num + 1';
 
   const generate_points = () => {
     let time = 0;
@@ -27,6 +32,10 @@ function Challenge1(props){
     setPoints(convert_to_points(ppoints))
   }
 
+  const del_popup = () => {
+    setShow(false);
+  }
+
   useEffect(() => {
     // console.log(typeof(height));
     generate_points();
@@ -41,6 +50,7 @@ function Challenge1(props){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setg} type = {'float'}/>
       </div>
       <div className="canvas">
+        <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             points = {points} 
@@ -57,7 +67,7 @@ function Challenge1(props){
             />
         </div>
       </div>
-
+      {show && <Popup del={del_popup}/>}
     </>
   )
 

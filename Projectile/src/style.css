@@ -137,6 +137,56 @@
   color: white;
 }
 
+.popup{
+  position: fixed;
+  top: 7%;
+  left: 25%;
+  width: 75%;
+  height: 93vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-inner{
+  position: relative;
+  padding: 32px;
+  box-shadow: 0 0 50px rgb(240, 240, 240);
+  width: 100%;
+  max-width: 640px;
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.popup-inner .close-btn{
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: black;
+  font-size: 15px;
+  transition: color 0.5s, font-size 0.5s;
+  top: 16px;
+  right: 16px;
+}
+
+.popup-inner .close-btn:hover{
+  color: red;
+  font-size: 22px;
+}
+
+.magnify{
+  position: absolute;
+  top: 20px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+  right: 10px;
+}
+
 @media screen and (max-width: 600px) {
 
   .navbar li.right,
