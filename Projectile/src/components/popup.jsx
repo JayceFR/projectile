@@ -10,7 +10,9 @@ function Popup(props){
             <button className="close-btn" onClick={props.del}>✘</button>
             <h3>Explanation</h3>
             <p>{challenges[props.index].explanation}</p>
-            <Code code={challenges[props.index].code}/>
+            {challenges[props.index].code.map((curr_code, index) => {
+              return <Code code={curr_code}/>
+            })}
           </div>
         </div>
       </>

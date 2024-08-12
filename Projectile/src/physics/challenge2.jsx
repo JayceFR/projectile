@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { convert_to_points, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
+import Popup from "../components/popup";
 
 function Challenge2(props){
   const [angle, setAngle2] = useState(45);
@@ -16,20 +17,25 @@ function Challenge2(props){
 
   const [points, setPoints] = useState([]);
 
-  const generate_points = () => {
-    console.log(typeof(vel))
-    let rangle = radians(angle);
-    const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g;
-    const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
-    let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
-    console.log("range", prange);
-    var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
-    setTimeOfFlight(prange/(vel * Math.cos(rangle)));
-    setPoints(convert_to_points(ppoints));
-    setXa(curr_xa);
-    setYa(curr_ya);
-    setRange(prange);
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
   }
+
+const generate_points = () => {
+  console.log(typeof(vel))
+  let rangle = radians(angle);
+  const curr_xa = vel * vel * Math.sin(rangle)* Math.cos(rangle) * 1/g;
+  const curr_ya = height + (vel * vel * Math.pow(Math.sin(rangle), 2) / (2 * g));
+  let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+  console.log("range", prange);
+  var ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel);
+  setTimeOfFlight(prange/(vel * Math.cos(rangle)));
+  setPoints(convert_to_points(ppoints));
+  setXa(curr_xa);
+  setYa(curr_ya);
+  setRange(prange);
+}
 
   useEffect(() => {
     // console.log(typeof(height));
@@ -46,6 +52,7 @@ function Challenge2(props){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setg2} type = {'float'}/>
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -74,6 +81,7 @@ function Challenge2(props){
           </div>
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {1}/>}
     </>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Input from "../components/input";
 import Graph from "../components/graph";
 import { minu, low_ball, high_ball } from "../model/projectile";
+import Popup from "../components/popup";
 
 function Challenge3(props){
   //inputs
@@ -21,21 +22,26 @@ function Challenge3(props){
   const [low_ball_points, setLowBallPoints] = useState([]);
   const [points, setPoints] = useState([]);
 
-  const generate_points = () => {
-    //min u 
-    const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50, {x:target_x, y:target_y});
-    setPoints(ppoints);
-    setMinLaunchVel(minvel);
-    //low ball
-    const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g, {x:target_x, y:target_y});
-    //high ball
-    const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g, {x: target_x, y: target_y});
-    setHighBallPoints(pphighpoints);
-    setLowBallPoints(pplowpoints);
-    setLowAngle(low_theta);
-    sethighangle(high_theta);
-    setMinVelAngle(points_angle);
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
   }
+
+const generate_points = () => {
+  //min u 
+  const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50, {x:target_x, y:target_y});
+  setPoints(ppoints);
+  setMinLaunchVel(minvel);
+  //low ball
+  const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g, {x:target_x, y:target_y});
+  //high ball
+  const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g, {x: target_x, y: target_y});
+  setHighBallPoints(pphighpoints);
+  setLowBallPoints(pplowpoints);
+  setLowAngle(low_theta);
+  sethighangle(high_theta);
+  setMinVelAngle(points_angle);
+}
 
   useEffect(() => {
     generate_points();
@@ -50,6 +56,7 @@ function Challenge3(props){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setG} type = {'float'}/>
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -90,6 +97,7 @@ function Challenge3(props){
             </div>
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {2}/>}
     </>
   )
 }
