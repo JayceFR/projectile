@@ -110,6 +110,69 @@ function convert_to_points(points){
   const points = convert_to_points(ppoints)
   return [mprange, mangle, points, ppoints];
 }`]
+  },
+  {
+    "explanation": "This challenge builds up on the fundamentals of the previous challenges. The min_u, low_ball, high_ball and max_r functions defined before are called. A new function is defined to plot the bounding parabola. This function is quite similar to that of challenge 2 but the max range computed in the max_r function is used instead.",
+    "code": [`const generate_points = () => {
+  //min u 
+  const [minvel, points_angle, ppoints] = minu(g, target_y, target_x, 50, {x:null, y:0});
+  setPoints(ppoints);
+  setMinLaunchVel(minvel);
+  setMinVelAngle(points_angle);
+  //low ball
+  const [low_theta, pplowpoints] = low_ball(target_x, target_y, vel, g, {x:null, y:0});
+  setLowBallPoints(pplowpoints);
+  setLowAngle(low_theta);
+  //high ball
+  const [high_theta, pphighpoints] = high_ball(target_x, target_y, vel, g, {x:null, y:0});
+  setHighBallPoints(pphighpoints);
+  sethighangle(high_theta);
+  //range
+  const [mprange,,max_r_point] = max_r(g, 0, vel)
+  setMaxRPoints(max_r_point) 
+  //bounding parabola
+  const bpoints = convert_to_points(bounding_parabola(50, {x:mprange, y:0}, g, vel))
+  setBoundingPoints(bpoints);
+  console.log("bounding points", bpoints)
+}`, `function bounding_parabola(num_of_points, final_point,g, vel ){
+  let ppoints = {x: [], y: []}
+  for(let x = 0; x < num_of_points; x++){
+    var curr_x = 0 + x * final_point.x/50;
+    ppoints.x.push(curr_x);
+    ppoints.y.push((vel * vel)/(2*g) - (g*curr_x*curr_x)/(2 * vel * vel));
+  }
+  ppoints.x.push(final_point.x);
+  ppoints.y.push(final_point.y);
+  return ppoints;
+}`]
+  },
+  {
+    "explanation": "This is quite an interesting challenge which mainly involved in developing our own implementation of the diff function available in matlab. The graphs were plotted using the gen points and the max_r functions defined before. For computing the distance travelled a new list was created to hold the difference of consecutive values in the original list. Finally the sum of the product is computed and displayed on the screen.",
+    "code" : [`const generate_points = () => {
+  const rangle = radians(angle)
+  let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+  const ppoints = gen_points(50, {x:prange, y:0}, height, rangle, g, vel)
+  setS(distance_travelled_i(delta(ppoints.x), delta(ppoints.y)))
+  setPoints(convert_to_points(ppoints))
+  const [ , mangle, points, ppoints2] = max_r(g, height, vel);
+  setMaxS(distance_travelled_i(delta(ppoints2.x), delta(ppoints2.y)))
+  setThetaMax(mangle);
+  setMaxRange(points);
+}`, `function delta(x){
+  var pos = 0
+  var rdx = []
+  while (pos < x.length - 1){
+    rdx.push(x[pos+1] - x[pos])
+    pos += 1
+  }
+  return rdx;
+}`, `function distance_travelled_i(dx, dy){
+  let s = 0;
+  for (let x = 0; x < dx.length; x++){
+    s += Math.sqrt(dx[x] * dx[x] + dy[x] * dy[x]);
+  }
+  return s
+}`]
   }
 
 ]

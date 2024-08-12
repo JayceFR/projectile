@@ -3,6 +3,7 @@ import Input from "../components/input";
 import Graph from "../components/graph";
 import { minu, low_ball, high_ball, max_r, bounding_parabola } from "../model/projectile";
 import { convert_to_points } from "../model/utils";
+import Popup from "../components/popup";
 
 function Challenge5(props){
   //inputs
@@ -23,6 +24,11 @@ function Challenge5(props){
   const [points, setPoints] = useState([]);
   const [max_r_points, setMaxRPoints] = useState([]);
   const [bounding_points, setBoundingPoints] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
+  }
 
   const generate_points = () => {
     //min u 
@@ -60,6 +66,7 @@ function Challenge5(props){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setG} type = {'float'}/>
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -110,6 +117,7 @@ function Challenge5(props){
             </div>
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {4}/>}
     </>
   )
 }

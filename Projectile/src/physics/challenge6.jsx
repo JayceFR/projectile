@@ -3,6 +3,7 @@ import { convert_to_points, delta, gen_points, radians } from "../model/utils";
 import Input from "../components/input";
 import Graph from "../components/graph";
 import { distance_travelled_i, max_r } from "../model/projectile";
+import Popup from "../components/popup";
 
 function Challenge6(props){
   const [angle, setAngle2] = useState(36);
@@ -17,6 +18,11 @@ function Challenge6(props){
 
   const [points, setPoints] = useState([]);
   const [max_range, setMaxRange] = useState([]);
+
+  const [show, setShow] = useState(false);
+  const del_popup = () => {
+    setShow(false);
+  }
 
   const generate_points = () => {
     const rangle = radians(angle)
@@ -43,6 +49,7 @@ function Challenge6(props){
         <Input name={"g"} value={g} unit={"ms^-2"} change_method={setg2} type = {'float'}/>
       </div>
       <div className="canvas">
+      <button className="magnify" onClick={() => {setShow(true)}}>🔍</button>
         <div className="graph">
           <Graph 
             xtext = {"x/m"} 
@@ -68,6 +75,7 @@ function Challenge6(props){
             </div>
         </div>
       </div>
+      {show && <Popup del={del_popup} index = {5}/>}
     </>
   )
 
