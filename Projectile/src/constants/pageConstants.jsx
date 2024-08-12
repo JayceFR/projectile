@@ -93,6 +93,23 @@ function convert_to_points(points){
   const points = convert_to_points(gen_points(50, {x:finish.x, y:finish.y}, 0, high_theta, g, vel))
   return [high_theta, points];
 }`]
+  }, 
+  {
+    "explanation": "This was quite a straightforward challenge, The first graph can be generated the same way as in challenge 2. The second graph used the same ideology but computed a different range and angle for the projectile's trajectory",
+    "code" : [`const generate_points = () => {
+  const rangle = radians(angle)
+  let prange = vel * vel * 1/g * (Math.sin(rangle) * Math.cos(rangle) + Math.cos(rangle) * Math.pow(Math.pow(Math.sin(rangle), 2) + (2*g*height/Math.pow(vel, 2)), 0.5));
+  setPoints(convert_to_points(gen_points(50, {x:prange, y:0}, height, rangle, g, vel)))
+  const [ , mangle, points] = max_r(g, height, vel);
+  setThetaMax(mangle);
+  setMaxRange(points);
+}`, `function max_r(g, height, vel){
+  const mprange = vel * vel * 1/g * Math.pow(1 + (2 * g* height)/(vel * vel), 0.5);
+  const mangle = Math.asin(1/Math.pow(2 + (2 * g * height)/(vel * vel), 0.5));
+  const ppoints = gen_points(50, {x:mprange, y:0}, height, mangle, g, vel)
+  const points = convert_to_points(ppoints)
+  return [mprange, mangle, points, ppoints];
+}`]
   }
 
 ]
